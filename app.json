@@ -1,0 +1,73 @@
+{
+  "expo": {
+    "name": "cancer-detection-app",
+    "slug": "cancer-detection-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ghanama.cancerdetectionapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.WAKE_LOCK"
+      ],
+      "package": "com.ghanama.cancerdetectionapp"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "extraMavenRepos": [
+              "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
+            ]
+          }
+        }
+      ],
+      "@stream-io/video-react-native-sdk",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) requires camera access in order to capture and transmit video",
+          "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
