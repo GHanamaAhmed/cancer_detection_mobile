@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "~/lib/useColorScheme";
+import ENV from "~/lib/env";
+
 export default function TabsLayout() {
   const { isDarkColorScheme } = useColorScheme();
 

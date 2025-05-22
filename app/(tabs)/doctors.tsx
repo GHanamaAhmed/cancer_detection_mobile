@@ -11,6 +11,8 @@ import { Avatar } from "~/components/ui/avatar";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "~/lib/useColorScheme";
+import ENV from "~/lib/env";
+
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
@@ -35,7 +37,7 @@ export default function FindDoctorScreen() {
       }
       try {
         const response = await fetch(
-          "http://192.168.10.30:3000/api/mobile/doctors?limit=10",
+          `${ENV.API_URL}/api/mobile/doctors?limit=10`,
           {
             method: "GET",
             headers: {
@@ -68,7 +70,7 @@ export default function FindDoctorScreen() {
       if (!selectedDoctorId) return;
       try {
         const response = await fetch(
-          `http://192.168.10.30:3000/api/mobile/doctors/${selectedDoctorId}`,
+          `${ENV.API_URL}/api/mobile/doctors/${selectedDoctorId}`,
           {
             method: "GET",
             headers: {
@@ -101,7 +103,7 @@ export default function FindDoctorScreen() {
       }
       // First check if connection already exists
       let response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
+        `${ENV.API_URL}/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
         {
           method: "GET",
           headers: {
@@ -143,7 +145,7 @@ export default function FindDoctorScreen() {
 
       // First check if connection already exists
       let response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
+        `${ENV.API_URL}/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
         {
           method: "GET",
           headers: {
@@ -178,7 +180,7 @@ export default function FindDoctorScreen() {
       } else {
         // If no connection exists, create one
         response = await fetch(
-          "http://192.168.10.30:3000/api/mobile/connection/create",
+          `${ENV.API_URL}/api/mobile/connection/create`,
           {
             method: "POST",
             headers: {

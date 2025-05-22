@@ -28,6 +28,7 @@ import {
 } from "~/types/mobile-api";
 import { Alert, Modal, View as RNView } from "react-native";
 import { Trash2 } from "lucide-react-native";
+import ENV from "~/lib/env";
 
 /**
  * Result Detail Screen - Shows detailed information about a skin check case
@@ -62,7 +63,7 @@ export default function ResultDetailScreen() {
       }
 
       const response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/result/${params.id}`,
+        `${ENV.API_URL}/api/mobile/result/${params.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -807,7 +808,7 @@ export default function ResultDetailScreen() {
 
               // Use a direct, simple URL format to avoid path issues
               const response = await fetch(
-                `http://192.168.10.30:3000/api/mobile/result/${params.id}`,
+                `${ENV.API_URL}/api/mobile/result/${params.id}`,
                 {
                   method: "DELETE",
                   headers: {

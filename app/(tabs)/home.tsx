@@ -18,6 +18,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { Feather } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { DashboardData } from "~/types/mobile-api";
+import ENV from "~/lib/env";
 
 export default function HomeScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -42,7 +43,7 @@ export default function HomeScreen() {
       }
 
       const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/user/dashboard",
+        `${ENV.API_URL}/api/mobile/user/dashboard`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

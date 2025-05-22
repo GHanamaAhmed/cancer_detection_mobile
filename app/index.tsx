@@ -1,4 +1,3 @@
-"use client";
 
 import { useEffect, useState } from "react";
 import {
@@ -25,10 +24,13 @@ import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { AuthResponse } from "~/types/mobile-api";
+import ENV from "~/lib/env";
 
 type ForgotPasswordStep = "email" | "verification" | "newPassword";
 
 export default function WelcomeScreen() {
+  console.log("env", process.env.API_URL);
+
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -60,16 +62,13 @@ export default function WelcomeScreen() {
           console.error("No token found");
           return;
         }
-        const res = await fetch(
-          "http://192.168.10.30:3000/api/mobile/user/profile",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${ENV.API_URL}/api/mobile/user/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) {
           console.error("Failed to fetch user profile");
           return;
@@ -93,18 +92,15 @@ export default function WelcomeScreen() {
     console.log("Login button pressed");
 
     try {
-      const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: loginEmail,
-            password: loginPassword,
-            rememberMe,
-          }),
-        }
-      );
+      const res = await fetch(`${ENV.API_URL}/api/mobile/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+          rememberMe,
+        }),
+      });
       if (res.ok) {
         const result: {
           data: AuthResponse;
@@ -138,7 +134,7 @@ export default function WelcomeScreen() {
   const handleRegister = async () => {
     try {
       const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/auth/register",
+        `${ENV.API_URL}/api/mobile/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -170,7 +166,7 @@ export default function WelcomeScreen() {
   const handleSendVerificationCode = async () => {
     try {
       const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/auth/forgot-password",
+        `${ENV.API_URL}/api/mobile/auth/forgot-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -191,7 +187,7 @@ export default function WelcomeScreen() {
   const handleVerifyCode = async () => {
     try {
       const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/auth/verify-code",
+        `${ENV.API_URL}/api/mobile/auth/verify-code`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -219,7 +215,7 @@ export default function WelcomeScreen() {
     }
     try {
       const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/auth/reset-password",
+        `${ENV.API_URL}/api/mobile/auth/reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

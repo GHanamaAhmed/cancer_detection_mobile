@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, router } from "expo-router";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
+import ENV from "~/lib/env";
+
 import { Badge } from "~/components/ui/badge";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Feather } from "@expo/vector-icons";

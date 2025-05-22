@@ -15,7 +15,7 @@ export function ThemeToggle() {
   return (
     <TouchableOpacity
       onPress={toggleColorScheme}
-      className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white dark:bg-slate-800 shadow-md"
+      className="absolute top-4 left-4 z-50 p-2 rounded-full bg-white dark:bg-slate-800 shadow-md"
       accessibilityLabel="Toggle theme"
     >
       {isDarkColorScheme ? (

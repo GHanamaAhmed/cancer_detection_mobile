@@ -14,3 +14,4 @@ A starting point to help you set up your project quickly and use the common comp
 <img src="https://github.com/mrzachnugent/react-native-reusables/assets/63797719/42c94108-38a7-498b-9c70-18640420f1bc"
      alt="starter-base-template"
      style="width:270px;" />
+# cancer_detection_app

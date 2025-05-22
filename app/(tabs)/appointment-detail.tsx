@@ -16,6 +16,8 @@ import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Avatar } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
+import ENV from "~/lib/env";
+
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "~/lib/useColorScheme";
 import * as SecureStore from "expo-secure-store";
@@ -63,7 +65,7 @@ export default function AppointmentDetailScreen(): React.ReactNode {
       }
 
       const response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/appointments/${id}`,
+        `${ENV.API_URL}/api/mobile/appointments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -118,7 +120,7 @@ export default function AppointmentDetailScreen(): React.ReactNode {
               }
 
               const response = await fetch(
-                `http://192.168.10.30:3000/api/mobile/appointments/${id}`,
+                `${ENV.API_URL}/api/mobile/appointments/${id}`,
                 {
                   method: "DELETE",
                   headers: {
@@ -176,7 +178,7 @@ export default function AppointmentDetailScreen(): React.ReactNode {
 
       // Get or create a video call room
       const response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/video-calls`,
+        `${ENV.API_URL}/api/mobile/video-calls`,
         {
           method: "POST",
           headers: {
@@ -612,7 +614,7 @@ export default function AppointmentDetailScreen(): React.ReactNode {
         </Card>
 
         {/* Action Buttons */}
-        <View className="space-y-3 mb-6">
+        <View className="space-y-3 mb-6 flex flex-col gap-2">
           {/* Video Call Button (only for video consultations that are confirmed and not past) */}
           {isVideoConsultation &&
             appointment.status === AppointmentStatus.CONFIRMED &&

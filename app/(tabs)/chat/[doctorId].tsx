@@ -15,6 +15,7 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import * as SecureStore from "expo-secure-store";
 import { Card } from "~/components/ui/card";
 import { AuthResponse } from "~/types/mobile-api";
+import ENV from "~/lib/env";
 
 export default function ChatScreen() {
   const { doctorId } = useLocalSearchParams();
@@ -48,7 +49,7 @@ export default function ChatScreen() {
         console.log(`Fetching messages for doctor ID: ${doctorId}`);
 
         const res = await fetch(
-          `http://192.168.10.30:3000/api/mobile/chat/messages?doctorId=${doctorId}`,
+          `${ENV.API_URL}/api/mobile/chat/messages?doctorId=${doctorId}`,
           {
             method: "GET",
             headers: {
@@ -97,17 +98,14 @@ export default function ChatScreen() {
     }
     if (!input.trim()) return;
     try {
-      const res = await fetch(
-        "http://192.168.10.30:3000/api/mobile/chat/messages",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ doctorId, content: input }),
-        }
-      );
+      const res = await fetch(`${ENV.API_URL}/api/mobile/chat/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ doctorId, content: input }),
+      });
       const json = await res.json();
       if (json.success) {
         setMessages((prev) => [...prev, json.data]);

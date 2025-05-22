@@ -15,6 +15,8 @@ import {
 } from "react-native";
 import { Feather, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Card } from "~/components/ui/card";
+import ENV from "~/lib/env";
+
 import { Button } from "~/components/ui/button";
 import { Avatar } from "~/components/ui/avatar";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -95,7 +97,7 @@ export default function AppointmentsScreen() {
       }
 
       const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/appointments",
+        `${ENV.API_URL}/api/mobile/appointments`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,7 +149,7 @@ export default function AppointmentsScreen() {
       }
 
       const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/doctors/connected",
+        `${ENV.API_URL}/api/mobile/doctors/connected`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -224,7 +226,7 @@ export default function AppointmentsScreen() {
       });
 
       const response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        `${ENV.API_URL}/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -250,7 +252,7 @@ export default function AppointmentsScreen() {
         );
 
         const expandedResponse = await fetch(
-          `http://192.168.10.30:3000/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${expandedEndDate.toISOString()}`,
+          `${ENV.API_URL}/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${expandedEndDate.toISOString()}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -309,7 +311,7 @@ export default function AppointmentsScreen() {
       };
 
       const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/appointments",
+        `${ENV.API_URL}/api/mobile/appointments`,
         {
           method: "POST",
           headers: {
@@ -382,7 +384,7 @@ export default function AppointmentsScreen() {
               }
 
               const response = await fetch(
-                `http://192.168.10.30:3000/api/mobile/appointments/${appointmentId}`,
+                `${ENV.API_URL}/api/mobile/appointments/${appointmentId}`,
                 {
                   method: "DELETE",
                   headers: {

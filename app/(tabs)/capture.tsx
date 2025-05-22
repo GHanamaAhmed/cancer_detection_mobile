@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import ENV from "~/lib/env";
+
 import {
   View,
   Text,
@@ -10,7 +12,12 @@ import {
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import {
+  CameraView,
+  useCameraPermissions,
+  FlashMode,
+  FocusMode,
+} from "expo-camera";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { CustomSlider } from "~/components/ui/slider";
@@ -38,8 +45,6 @@ enum BodyLocation {
 export default function CaptureScreen() {
   const [captured, setCaptured] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [lighting, setLighting] = useState(75);
-  const [isFlashOn, setIsFlashOn] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [cloudinaryData, setCloudinaryData] = useState<{
@@ -53,6 +58,7 @@ export default function CaptureScreen() {
   );
   const [showBodyLocationPicker, setShowBodyLocationPicker] = useState(false);
   const [lesionSize, setLesionSize] = useState<string>("");
+  const [flashMode, setFlashMode] = useState<FlashMode>("off");
 
   const cameraRef = useRef<CameraView>(null);
   const { isDarkColorScheme } = useColorScheme();
@@ -93,7 +99,9 @@ export default function CaptureScreen() {
       setCaptured(true);
     }
   };
-
+  const toggleFlash = () => {
+    setFlashMode((prevMode) => (prevMode === "off" ? "on" : "off"));
+  };
   // Update the uploadImage function in your capture.tsx file:
   const uploadImage = async () => {
     if (!imageUri) return;
@@ -146,7 +154,7 @@ export default function CaptureScreen() {
 
             // 1. First upload the image to your API
             const apiResponse = await fetch(
-              "http://192.168.10.30:3000/api/mobile/upload-image",
+              `${ENV.API_URL}/api/mobile/upload-image`,
               {
                 method: "POST",
                 headers: {
@@ -171,7 +179,7 @@ export default function CaptureScreen() {
 
             // 2. Now create a lesion case with the uploaded image
             const lesionCaseResponse = await fetch(
-              "http://192.168.10.30:3000/api/mobile/lesion-case",
+              `${ENV.API_URL}/api/mobile/lesion-case`,
               {
                 method: "POST",
                 headers: {
@@ -250,9 +258,8 @@ export default function CaptureScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-teal-50 dark:bg-slate-900">
-      <ThemeToggle />
-      <View className="p-4">
+    <ScrollView className="flex-1 bg-teal-50 dark:bg-slate-900" >
+      <View className="">
         <Card className="w-full max-w-md mx-auto">
           <View className="px-6 pt-8 pb-4">
             <Text className="text-2xl font-bold mb-1 text-slate-800 dark:text-white">
@@ -275,7 +282,8 @@ export default function CaptureScreen() {
                 ref={cameraRef}
                 style={{ flex: 1 }}
                 facing={ImagePicker.CameraType.back}
-                flash={isFlashOn ? "on" : "off"}
+                flash={flashMode}
+                focusable={true}
               >
                 <View className="flex-1 border-[40px] border-dashed border-white/30 dark:border-white/20">
                   <View className="flex-1 items-center justify-center">
@@ -298,14 +306,6 @@ export default function CaptureScreen() {
           {!captured && (
             <View className="px-6 py-4">
               <View className="gap-4">
-                <CustomSlider
-                  value={lighting}
-                  onValueChange={setLighting}
-                  label="Lighting"
-                  valueLabel="Good"
-                  icon={<Feather name="sun" size={16} color="#00c4b4" />}
-                />
-
                 {/* Flash toggle button */}
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center">
@@ -317,11 +317,11 @@ export default function CaptureScreen() {
                     </Text>
                   </View>
                   <Button
-                    variant={isFlashOn ? "primary" : "outline"}
-                    onPress={() => setIsFlashOn(!isFlashOn)}
-                    className="h-9"
+                    variant={flashMode == "on" ? "primary" : "outline"}
+                    onPress={toggleFlash}
+                    className=""
                   >
-                    {isFlashOn ? "On" : "Off"}
+                    {flashMode == "on" ? "On" : "Off"}
                   </Button>
                 </View>
               </View>

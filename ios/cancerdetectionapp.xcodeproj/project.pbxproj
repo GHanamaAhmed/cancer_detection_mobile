@@ -14,7 +14,7 @@
 		96905EF65AED1B983A6B3ABC /* libPods-cancerdetectionapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-cancerdetectionapp.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		F61EB42C99D54DD7988F0DB4 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = A95C9A0ABD6D43BA84291DE6 /* noop-file.swift */; };
+		FEA1F8E4D70943808A181F40 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = A466DD21AB2E4173B4E2FC9E /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,8 +31,8 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-cancerdetectionapp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		A95C9A0ABD6D43BA84291DE6 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "cancerdetectionapp/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		A12D94F954F4486D80E81EFE /* cancerdetectionapp-Bridging-Header.h */ = {isa = PBXFileReference; name = "cancerdetectionapp-Bridging-Header.h"; path = "cancerdetectionapp/cancerdetectionapp-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		A466DD21AB2E4173B4E2FC9E /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "cancerdetectionapp/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		07B50B4BA6F14678A535DA44 /* cancerdetectionapp-Bridging-Header.h */ = {isa = PBXFileReference; name = "cancerdetectionapp-Bridging-Header.h"; path = "cancerdetectionapp/cancerdetectionapp-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,8 +57,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				A95C9A0ABD6D43BA84291DE6 /* noop-file.swift */,
-				A12D94F954F4486D80E81EFE /* cancerdetectionapp-Bridging-Header.h */,
+				A466DD21AB2E4173B4E2FC9E /* noop-file.swift */,
+				07B50B4BA6F14678A535DA44 /* cancerdetectionapp-Bridging-Header.h */,
 			);
 			name = cancerdetectionapp;
 			sourceTree = "<group>";
@@ -198,7 +198,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				0A4D45FD51D64F0AA37D711F /* cancerdetectionapp-Bridging-Header.h in Resources */,
+				DB488B05CE97480FA4D0CCD0 /* cancerdetectionapp-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,7 +274,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				F61EB42C99D54DD7988F0DB4 /* noop-file.swift in Sources */,
+				FEA1F8E4D70943808A181F40 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

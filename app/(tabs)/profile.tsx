@@ -26,6 +26,7 @@ import * as Location from "expo-location";
 import * as Notifications from "expo-notifications";
 import { cld, upload } from "~/lib/cloudinary";
 import { ProfileData } from "~/types/mobile-api";
+import ENV from "~/lib/env";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -99,14 +100,11 @@ export default function ProfileScreen() {
         return;
       }
 
-      const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/user/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -166,17 +164,14 @@ export default function ProfileScreen() {
         },
       };
 
-      const response = await fetch(
-        "http://192.168.10.30:3000/api/mobile/user/profile",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(updateData),
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/user/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updateData),
+      });
 
       const data = await response.json();
 
@@ -480,7 +475,7 @@ export default function ProfileScreen() {
 
             console.log("Updating profile photo on server...");
             const apiResponse = await fetch(
-              "http://192.168.10.30:3000/api/mobile/user/profile/photo",
+              `${ENV.API_URL}/api/mobile/user/profile/photo`,
               {
                 method: "POST",
                 headers: {
@@ -583,7 +578,6 @@ export default function ProfileScreen() {
       className="flex-1 bg-teal-50 dark:bg-slate-900"
       edges={["top"]}
     >
-      <ThemeToggle />
       {loading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator
@@ -613,6 +607,8 @@ export default function ProfileScreen() {
           className="flex-1 w-full"
           contentContainerStyle={{ flexGrow: 1 }}
         >
+          {" "}
+          <ThemeToggle />
           <Card className="w-full max-w-md mx-auto">
             <View className="relative bg-teal-500 pt-12 pb-20">
               <TouchableOpacity

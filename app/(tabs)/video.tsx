@@ -21,6 +21,7 @@ import {
   useStreamVideoClient,
   StreamCall,
 } from "@stream-io/video-react-native-sdk";
+import ENV from "~/lib/env";
 
 // Create getstream client outside component to avoid recreating it
 let streamClient: StreamVideoClient | null = null;
@@ -65,7 +66,7 @@ function CallRenderer({
   );
 }
 
-export default function VideoCallScreen() {
+export default function Video() {
   const { roomId, appointmentId, doctorName, doctorImage } =
     useLocalSearchParams();
   const router = useRouter();
@@ -113,7 +114,7 @@ export default function VideoCallScreen() {
         }
         // Create GetStream token
         const streamTokenResponse = await fetch(
-          `http://192.168.10.30:3000/api/mobile/video-calls/stream-token?userId=${userInfoData.id}`,
+          `${ENV.API_URL}/api/mobile/video-calls/stream-token?userId=${userInfoData.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -131,7 +132,7 @@ export default function VideoCallScreen() {
         // Update room status to active
         if (appointmentId) {
           await fetch(
-            `http://192.168.10.30:3000/api/mobile/video-calls/status`,
+            `${ENV.API_URL}/api/mobile/video-calls/status`,
             {
               method: "PUT",
               headers: {
@@ -219,7 +220,7 @@ export default function VideoCallScreen() {
               if (token && roomId) {
                 // Update room status to ended
                 await fetch(
-                  `http://192.168.10.30:3000/api/mobile/video-calls/status`,
+                  `${ENV.API_URL}/api/mobile/video-calls/status`,
                   {
                     method: "PUT",
                     headers: {
