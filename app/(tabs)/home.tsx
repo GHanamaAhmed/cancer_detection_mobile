@@ -42,14 +42,11 @@ export default function HomeScreen() {
         return;
       }
 
-      const response = await fetch(
-        `${ENV.API_URL}/api/mobile/user/dashboard`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/user/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -78,7 +75,7 @@ export default function HomeScreen() {
   };
 
   const getRiskBadge = (risk: string) => {
-    switch (risk) {
+    switch (risk.toLocaleUpperCase()) {
       case "LOW":
         return {
           color: isDarkColorScheme ? "#10b981" : "#059669",

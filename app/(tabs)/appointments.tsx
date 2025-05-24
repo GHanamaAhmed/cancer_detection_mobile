@@ -96,14 +96,11 @@ export default function AppointmentsScreen() {
         return;
       }
 
-      const response = await fetch(
-        `${ENV.API_URL}/api/mobile/appointments`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/appointments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -114,7 +111,9 @@ export default function AppointmentsScreen() {
       const now = new Date();
       const upcoming = data.data.filter(
         (appt: Appointment) =>
-          new Date(appt.date) >= now && appt.status !== "CANCELED"
+          new Date(appt.date) >= now &&
+          appt.status !== "CANCELED" &&
+          appt.status != "COMPLETED"
       );
       const past = data.data.filter(
         (appt: Appointment) =>
@@ -226,7 +225,9 @@ export default function AppointmentsScreen() {
       });
 
       const response = await fetch(
-        `${ENV.API_URL}/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        `${
+          ENV.API_URL
+        }/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -252,7 +253,9 @@ export default function AppointmentsScreen() {
         );
 
         const expandedResponse = await fetch(
-          `${ENV.API_URL}/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${expandedEndDate.toISOString()}`,
+          `${
+            ENV.API_URL
+          }/api/mobile/doctors/availability?doctorId=${doctorId}&startDate=${startDate.toISOString()}&endDate=${expandedEndDate.toISOString()}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -310,24 +313,21 @@ export default function AppointmentsScreen() {
         location: selectedDoctor.location,
       };
 
-      const response = await fetch(
-        `${ENV.API_URL}/api/mobile/appointments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(appointmentData),
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(appointmentData),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to book appointment");
       }
- 
+
       Alert.alert(
         "Appointment Requested",
         "Your appointment request has been sent to the doctor. You'll be notified once it's confirmed.",
@@ -569,7 +569,7 @@ export default function AppointmentsScreen() {
           <View className="p-4">
             <View className="flex-row items-center justify-between mb-3">
               <View className="flex-row items-center">
-                 <Avatar
+                <Avatar
                   source={appointment.doctor.image}
                   fallback={appointment.doctor.name.substring(0, 2)}
                   size="md"

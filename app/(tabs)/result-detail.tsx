@@ -119,7 +119,9 @@ export default function ResultDetailScreen() {
    * Get badge style based on risk level
    */
   const getRiskBadge = (risk: string) => {
-    switch (risk) {
+    console.log("Risk Level:", risk);
+    
+    switch (risk.toUpperCase()) {
       case RiskLevel.LOW:
         return {
           color: isDarkColorScheme ? "#10b981" : "#059669",

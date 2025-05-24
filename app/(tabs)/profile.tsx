@@ -24,7 +24,7 @@ import * as SecureStore from "expo-secure-store";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import * as Notifications from "expo-notifications";
-import { cld, upload } from "~/lib/cloudinary";
+import { cld, uploadToCloudinary } from "~/lib/cloudinary";
 import { ProfileData } from "~/types/mobile-api";
 import ENV from "~/lib/env";
 
@@ -423,7 +423,6 @@ export default function ProfileScreen() {
       Alert.alert("Error", "Failed to take picture. Please try again.");
     }
   };
-
   const uploadImage = async (imageUri: string) => {
     try {
       setUploading(true);
@@ -433,87 +432,59 @@ export default function ProfileScreen() {
         throw new Error("No image selected");
       }
 
-      // Configure upload options
-      const options = {
-        upload_preset: "heathcare",
-        unsigned: true,
-      };
-
       console.log("Starting upload to Cloudinary...");
 
-      // Upload to Cloudinary
-      await upload(cld, {
-        file: imageUri,
-        options: options,
-        callback: async (error, response) => {
-          try {
-            if (error) {
-              console.error("Cloudinary upload error:", error);
-              Alert.alert("Error", "Failed to upload image. Please try again.");
-              setUploading(false);
-              return;
-            }
+      // Use our new direct upload function
+      const cloudinaryResponse = await uploadToCloudinary(imageUri);
 
-            if (!response || !response.secure_url) {
-              console.error("No response URL from Cloudinary");
-              Alert.alert(
-                "Error",
-                "Failed to get image URL. Please try again."
-              );
-              setUploading(false);
-              return;
-            }
+      if (!cloudinaryResponse || !cloudinaryResponse.secure_url) {
+        console.error("No response URL from Cloudinary");
+        Alert.alert("Error", "Failed to get image URL. Please try again.");
+        setUploading(false);
+        return;
+      }
 
-            console.log("Upload successful, image URL:", response.secure_url);
+      console.log(
+        "Upload successful, image URL:",
+        cloudinaryResponse.secure_url
+      );
 
-            // Send image URL to API
-            const token = await SecureStore.getItemAsync("token");
-            if (!token) {
-              router.replace("/");
-              return;
-            }
+      // Send image URL to API
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        router.replace("/");
+        return;
+      }
 
-            console.log("Updating profile photo on server...");
-            const apiResponse = await fetch(
-              `${ENV.API_URL}/api/mobile/user/profile/photo`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  imageUrl: response.secure_url,
-                }),
-              }
-            );
+      console.log("Updating profile photo on server...");
+      const apiResponse = await fetch(
+        `${ENV.API_URL}/api/mobile/user/profile/photo`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            imageUrl: cloudinaryResponse.secure_url,
+          }),
+        }
+      );
 
-            const apiData = await apiResponse.json();
+      const apiData = await apiResponse.json();
 
-            if (!apiResponse.ok) {
-              throw new Error(
-                apiData.error || "Failed to update profile photo"
-              );
-            }
+      if (!apiResponse.ok) {
+        throw new Error(apiData.error || "Failed to update profile photo");
+      }
 
-            console.log("Profile photo updated successfully");
-            // Refresh profile data to show new photo
-            fetchProfileData();
-            Alert.alert("Success", "Profile photo updated successfully");
-          } catch (callbackError) {
-            console.error("Error in callback:", callbackError);
-            Alert.alert(
-              "Error",
-              "Failed to complete profile photo update. Please try again."
-            );
-          } finally {
-            setUploading(false);
-          }
-        },
-      });
+      console.log("Profile photo updated successfully");
+      // Refresh profile data to show new photo
+      fetchProfileData();
+      Alert.alert("Success", "Profile photo updated successfully");
     } catch (error) {
       console.error("Error uploading profile photo:", error);
       Alert.alert("Error", "Failed to update profile photo. Please try again.");
+    } finally {
       setUploading(false);
     }
   };

@@ -2,18 +2,29 @@ import Constants from "expo-constants";
 
 const ENV = {
   dev: {
-    API_URL: "http://10.42.0.1:3000",
+    API_URL: "http://192.168.10.30:3000",
     CLOUDINARY_CLOUD_NAME: "daz7u2cxx",
     CLOUDINARY_API_KEY: "582647662267854",
+    GETSTREAM_API_KEY: "s8hqchfn888p",
+    GETSTREAM_APP_ID: "1388927",
+    PUSHER_APP_ID: "1997409",
+    PUSHER_KEY: "024cbd64277a5a0a9384",
+    PUSHER_CLUSTER: "eu",
   },
   prod: {
-    API_URL: "http://10.42.0.1:3000",
+    API_URL: "http://192.168.10.30:3000",
     CLOUDINARY_CLOUD_NAME: "daz7u2cxx",
     CLOUDINARY_API_KEY: "582647662267854",
+    GETSTREAM_API_KEY: "s8hqchfn888p",
+    GETSTREAM_APP_ID: "1388927",
+    PUSHER_APP_ID: "1997409",
+    PUSHER_KEY: "024cbd64277a5a0a9384",
+    PUSHER_CLUSTER: "eu",
   },
 };
 
 const getEnvVars = (
+  // @ts-ignore
   env = Constants.manifest?.releaseChannel ?? "development"
 ) => {
   if (env === "production") return ENV.prod;

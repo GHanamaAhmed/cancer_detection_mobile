@@ -13,13 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "~/lib/useColorScheme";
 import ENV from "~/lib/env";
 
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 // Import the types from your API types file
 import { DoctorSummary, DoctorDetail } from "~/types/mobile-api";
 
 export default function FindDoctorScreen() {
+  const router = useRouter();
   const { isDarkColorScheme } = useColorScheme();
   const [doctors, setDoctors] = useState<DoctorSummary[]>([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(null);
@@ -179,21 +180,18 @@ export default function FindDoctorScreen() {
         }
       } else {
         // If no connection exists, create one
-        response = await fetch(
-          `${ENV.API_URL}/api/mobile/connection/create`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              doctorId: doctorDetail.id,
-              message:
-                "I would like to connect with you regarding my skin health.",
-            }),
-          }
-        );
+        response = await fetch(`${ENV.API_URL}/api/mobile/connection/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            doctorId: doctorDetail.id,
+            message:
+              "I would like to connect with you regarding my skin health.",
+          }),
+        });
 
         data = await response.json();
 
@@ -222,7 +220,13 @@ export default function FindDoctorScreen() {
   };
   // Within your existing FindDoctorScreen component, update the helper functions:
   const handleChat = () => {
-    router.push(`/(tabs)/chat/${doctorDetail?.id}`);
+    router.push({
+      pathname: `/(tabs)/chat/[doctorId]`,
+      params: {
+        doctorId: doctorDetail?.id!,
+        DoctoruserId: doctorDetail?.userId,
+      },
+    });
   };
 
   const handleVideoCall = () => {

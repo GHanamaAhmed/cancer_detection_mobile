@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
   BackHandler,
+  StyleSheet,
 } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,11 +23,11 @@ import {
   StreamCall,
 } from "@stream-io/video-react-native-sdk";
 import ENV from "~/lib/env";
+import { CallContent } from "@stream-io/video-react-native-sdk";
 
 // Create getstream client outside component to avoid recreating it
 let streamClient: StreamVideoClient | null = null;
 
-// Component to render the actual call UI once everything is set up
 function CallRenderer({
   call,
   doctorName,
@@ -40,7 +41,6 @@ function CallRenderer({
 }) {
   return (
     <StreamCall call={call}>
-      {/* Doctor info header */}
       <SafeAreaView className="bg-black/70 absolute top-0 left-0 right-0 z-10">
         <View className="flex-row items-center p-4">
           <Avatar
@@ -61,10 +61,35 @@ function CallRenderer({
         </View>
       </SafeAreaView>
 
-      {/* The call UI will be rendered automatically by StreamCall */}
+      {/* Add CallContent to render the call UI */}
+      <CallContent />
     </StreamCall>
   );
 }
+
+// Error display component
+const ErrorView = ({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) => (
+  <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center p-4">
+    <View className="items-center">
+      <Feather name="alert-circle" size={48} color="#ef4444" />
+      <Text className="text-white text-lg font-medium mt-4 text-center">
+        {message}
+      </Text>
+      <Pressable
+        className="bg-teal-600 px-6 py-3 rounded-lg mt-6"
+        onPress={onRetry}
+      >
+        <Text className="text-white font-medium">Try Again</Text>
+      </Pressable>
+    </View>
+  </SafeAreaView>
+);
 
 export default function Video() {
   const { roomId, appointmentId, doctorName, doctorImage } =
@@ -76,7 +101,7 @@ export default function Video() {
   const [call, setCall] = useState<Call | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Handle back button
+  // Handle hardware back button
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -89,52 +114,58 @@ export default function Video() {
     return () => backHandler.remove();
   }, []);
 
-  // Initialize the call
+  // Clean up function for when component unmounts
   useEffect(() => {
-    async function initializeCall() {
+    return () => {
+      if (call) {
+        try {
+          call.leave();
+        } catch (err) {
+          console.error("Error leaving call on cleanup:", err);
+        }
+      }
+    };
+  }, [call]);
+
+  // Initialize the call
+  const initializeCall = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (!roomId) {
+        throw new Error("Room ID is required");
+      }
+
+      // Get user token and info
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        router.replace("/");
+        return;
+      }
+
+      // Get user info with better error handling
+      let userInfoData;
       try {
-        setLoading(true);
-        setError(null);
+        const userString = await SecureStore.getItemAsync("user");
+        if (!userString) throw new Error("User info not found");
+        userInfoData = JSON.parse(userString);
+      } catch (parseError) {
+        console.error("Error parsing user data:", parseError);
+        throw new Error("Invalid user data format");
+      }
 
-        if (!roomId) {
-          throw new Error("Room ID is required");
-        }
+      if (!userInfoData) {
+        throw new Error("User info is required");
+      }
 
-        // Get user token and info
-        const token = await SecureStore.getItemAsync("token");
-        if (!token) {
-          router.replace("/");
-          return;
-        }
-        const user = (await SecureStore.getItemAsync("user")) as User | null;
-
-        const userInfoData = user;
-        if (!userInfoData) {
-          throw new Error("User info is required");
-        }
-        // Create GetStream token
-        const streamTokenResponse = await fetch(
-          `${ENV.API_URL}/api/mobile/video-calls/stream-token?userId=${userInfoData.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const streamTokenData = await streamTokenResponse.json();
-        if (!streamTokenResponse.ok) {
-          throw new Error(
-            streamTokenData.error || "Failed to get Stream token"
-          );
-        }
-
-        // Update room status to active
-        if (appointmentId) {
-          await fetch(
-            `${ENV.API_URL}/api/mobile/video-calls/status`,
+      // Update room status to active
+      if (roomId) {
+        try {
+          const response = await fetch(
+            `${ENV.API_URL}/api/mobile/video-calls`,
             {
-              method: "PUT",
+              method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -145,57 +176,93 @@ export default function Video() {
               }),
             }
           );
+
+          if (!response.ok) {
+            console.warn(`Failed to update room status: ${response.status}`);
+            // Continue anyway
+          }
+        } catch (statusError) {
+          console.error("Error updating room status:", statusError);
+          // Continue with the call even if status update fails
         }
-
-        // Initialize GetStream client
-        const apiKey = "s8hqchfn888p"; // Replace with your GetStream API key
-
-        // Create a user
-        const streamUser = user;
-
-        setUser(streamUser);
-
-        // Initialize client if not already created
-        if (!streamClient) {
-          streamClient = new StreamVideoClient({
-            apiKey,
-            user: streamUser,
-            token: streamTokenData.token,
-          });
-        }
-
-        // Get or create the call
-        const callType = "default";
-        const callId = roomId as string;
-        const newCall = streamClient.call(callType, callId);
-
-        try {
-          // Join the call
-          await newCall.join({ create: true });
-          setCall(newCall);
-        } catch (callError) {
-          console.error("Error joining call:", callError);
-          throw new Error("Failed to join the call. Please try again.");
-        }
-
-        setLoading(false);
-      } catch (err: any) {
-        console.error("Error initializing video call:", err);
-        setError(err.message || "Failed to initialize video call");
-        setLoading(false);
       }
+
+      // Get Stream token from your API
+      const tokenResponse = await fetch(
+        `${ENV.API_URL}/api/mobile/video-calls/token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ roomId }),
+        }
+      );
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error("Stream token error response:", errorText);
+        throw new Error(`Failed to get video token (${tokenResponse.status})`);
+      }
+
+      // Parse token response
+      const tokenData = await tokenResponse.json();
+
+      if (!tokenData.token) {
+        console.error("Invalid token response:", tokenData);
+        throw new Error("Invalid token response from server");
+      }
+
+      // Initialize GetStream client
+      const apiKey = ENV.GETSTREAM_API_KEY;
+      if (!apiKey) {
+        throw new Error("GetStream API key not configured");
+      }
+
+      // Create a user
+      const streamUser = {
+        id: userInfoData.id,
+        name: userInfoData.name || "User",
+        image: userInfoData.image || "",
+      };
+
+      setUser(streamUser);
+
+      // Initialize client if not already created
+      if (!streamClient) {
+        streamClient = new StreamVideoClient({
+          apiKey,
+          user: streamUser,
+          token: tokenData.token,
+        });
+      }
+
+      // Get or create the call
+      const callType = "default";
+      const callId = roomId as string;
+      const newCall = streamClient.call(callType, callId);
+      try {
+        // Join the call
+        await newCall.join({ create: true });
+        setCall(newCall);
+      } catch (callError) {
+        console.error("Error joining call:", callError);
+        throw new Error("Failed to join the call. Please try again.");
+      }
+
+      setLoading(false);
+    } catch (err: any) {
+      console.error("Error initializing video call:", err);
+      setError(err.message || "Failed to initialize video call");
+      setLoading(false);
     }
-
-    initializeCall();
-
-    // Cleanup function
-    return () => {
-      if (call) {
-        call.leave();
-      }
-      // Don't disconnect client here to allow reuse
-    };
   }, [roomId, appointmentId, router]);
+
+  // Load call when component mounts
+  useEffect(() => {
+    initializeCall();
+  }, [initializeCall]);
 
   const handleEndCall = async () => {
     Alert.alert(
@@ -219,20 +286,17 @@ export default function Video() {
               const token = await SecureStore.getItemAsync("token");
               if (token && roomId) {
                 // Update room status to ended
-                await fetch(
-                  `${ENV.API_URL}/api/mobile/video-calls/status`,
-                  {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                      roomId,
-                      status: "ENDED",
-                    }),
-                  }
-                );
+                await fetch(`${ENV.API_URL}/api/mobile/video-calls`, {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    roomId,
+                    status: "ENDED",
+                  }),
+                });
               }
 
               // Navigate back to appointment detail
@@ -252,70 +316,24 @@ export default function Video() {
     );
   };
 
+  // Show loading state
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900">
-        <Stack.Screen
-          options={{
-            title: "Video Call",
-            headerShown: false,
-          }}
-        />
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0ea5e9" />
-          <Text className="mt-4 text-white">Connecting to video call...</Text>
-        </View>
+      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
+        <ActivityIndicator size="large" color="#00C4B4" />
+        <Text className="text-white mt-4">Connecting to call...</Text>
       </SafeAreaView>
     );
   }
 
+  // Show error state
   if (error) {
+    return <ErrorView message={error} onRetry={initializeCall} />;
+  }
+
+  // Show call screen
+  if (call && user && streamClient) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900">
-        <Stack.Screen
-          options={{
-            title: "Video Call Error",
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: "#0f172a",
-            },
-            headerTintColor: "#ffffff",
-          }}
-        />
-        <View className="flex-1 items-center justify-center p-6">
-          <Feather name="video-off" size={48} color="#ef4444" />
-          <Text className="mt-4 text-center text-white font-bold text-lg">
-            Failed to join video call
-          </Text>
-          <Text className="mt-2 text-center text-gray-400">{error}</Text>
-          <Pressable
-            className="mt-6 bg-blue-600 py-3 px-6 rounded-lg"
-            onPress={() =>
-              router.replace(`/appointment-detail?id=${appointmentId}`)
-            }
-          >
-            <Text className="text-white font-medium">
-              Return to Appointment
-            </Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (!call || !user || !streamClient) {
-    return null;
-  }
-
-  return (
-    <View className="flex-1 bg-black">
-      <Stack.Screen
-        options={{
-          title: "Video Call",
-          headerShown: false,
-        }}
-      />
-
       <StreamVideo client={streamClient}>
         <CallRenderer
           call={call}
@@ -324,6 +342,19 @@ export default function Video() {
           onEndCall={handleEndCall}
         />
       </StreamVideo>
-    </View>
+    );
+  }
+
+  // Fallback
+  return (
+    <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
+      <Text className="text-white">Something went wrong</Text>
+      <Pressable
+        className="bg-teal-600 px-6 py-3 rounded-lg mt-6"
+        onPress={initializeCall}
+      >
+        <Text className="text-white font-medium">Try Again</Text>
+      </Pressable>
+    </SafeAreaView>
   );
 }

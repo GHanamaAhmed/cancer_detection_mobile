@@ -261,6 +261,7 @@ export interface DoctorDetail {
   id: string;
   name: string;
   specialty: string;
+  userId: string
   rating: number;
   reviewsCount: number;
   status: "online" | "offline";
@@ -611,6 +612,12 @@ export interface LesionCase {
   images: Array<ImageUpload>;
   analysisResults: Array<AnalysisResult>;
 }
+export type Message = {
+  id: string | number;
+  senderId: string;
+  content: string;
+  createdAt: string | Date;
+};
 
 /**
  * Image upload data structure

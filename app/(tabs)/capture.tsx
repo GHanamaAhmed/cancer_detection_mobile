@@ -24,9 +24,10 @@ import { CustomSlider } from "~/components/ui/slider";
 import { Badge } from "~/components/ui/badge";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { cld, AdvancedImage, upload } from "~/lib/cloudinary";
+import { cld, uploadToCloudinary } from "~/lib/cloudinary";
 import * as SecureStore from "expo-secure-store";
 import { TextInput } from "react-native";
+import { ApiResponse, LesionCase } from "~/types/mobile-api";
 
 // Body location enum matching your Prisma schema
 enum BodyLocation {
@@ -102,7 +103,7 @@ export default function CaptureScreen() {
   const toggleFlash = () => {
     setFlashMode((prevMode) => (prevMode === "off" ? "on" : "off"));
   };
-  // Update the uploadImage function in your capture.tsx file:
+
   const uploadImage = async () => {
     if (!imageUri) return;
 
@@ -121,109 +122,84 @@ export default function CaptureScreen() {
     setUploadSuccess(false);
 
     try {
-      // Configure upload options
-      const options = {
-        upload_preset: "heathcare",
-        unsigned: true,
-      };
+      // Upload the image using our direct API upload
+      const cloudinaryResponse = await uploadToCloudinary(imageUri);
 
-      // Upload the image
-      await upload(cld, {
-        file: imageUri,
-        options: options,
-        callback: async (error, response) => {
-          if (error || !response) {
-            console.error("Cloudinary upload error:", error);
-            alert("Failed to upload to Cloudinary. Please try again.");
-            setUploading(false);
-            return;
-          }
+      if (!cloudinaryResponse) {
+        alert("Failed to upload to Cloudinary. Please try again.");
+        setUploading(false);
+        return;
+      }
 
-          // Set Cloudinary data from the response
-          setCloudinaryData({
-            publicId: response.public_id,
-            imageUrl: response.secure_url,
-          });
-
-          // Now, send data to your API
-          try {
-            const token = await SecureStore.getItemAsync("token");
-            if (!token) {
-              throw new Error("Authentication token not found");
-            }
-
-            // 1. First upload the image to your API
-            const apiResponse = await fetch(
-              `${ENV.API_URL}/api/mobile/upload-image`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  publicId: response.public_id,
-                  imageUrl: response.secure_url,
-                  bodyLocation: bodyLocation,
-                  lesionSize: parseFloat(lesionSize),
-                  notes: "Uploaded from mobile app",
-                }),
-              }
-            );
-
-            const apiData = await apiResponse.json();
-
-            if (!apiResponse.ok) {
-              throw new Error(apiData.error || "Failed to save image data");
-            }
-
-            // 2. Now create a lesion case with the uploaded image
-            const lesionCaseResponse = await fetch(
-              `${ENV.API_URL}/api/mobile/lesion-case`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  imageId: apiData.id, // Use the ID from the uploaded image
-                  imageUrl: response.secure_url,
-                  bodyLocation: bodyLocation,
-                  lesionSize: parseFloat(lesionSize),
-                  notes: "Uploaded from mobile app",
-                }),
-              }
-            );
-
-            const lesionCaseData = await lesionCaseResponse.json();
-
-            if (!lesionCaseResponse.ok) {
-              throw new Error(
-                lesionCaseData.error || "Failed to create lesion case"
-              );
-            }
-            setLesionCase(lesionCaseData);
-            setUploadSuccess(true);
-
-            // Navigate to results or details page after successful upload
-            // setTimeout(() => {
-            //   router.push({
-            //     pathname: "/lesion-case",
-            //     params: {
-            //       caseId: lesionCaseData.data.id,
-            //       imageUrl: response.secure_url,
-            //     },
-            //   });
-            // }, 1000);
-          } catch (apiError) {
-            console.error("API upload error:", apiError);
-            alert("Failed to save image data. Please try again.");
-          } finally {
-            setUploading(false);
-          }
-        },
+      // Set Cloudinary data from the response
+      setCloudinaryData({
+        publicId: cloudinaryResponse.public_id,
+        imageUrl: cloudinaryResponse.secure_url,
       });
+
+      // Now, send data to your API
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        if (!token) {
+          throw new Error("Authentication token not found");
+        }
+
+        // 1. First upload the image to your API
+        const apiResponse = await fetch(
+          `${ENV.API_URL}/api/mobile/upload-image`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              publicId: cloudinaryResponse.public_id,
+              imageUrl: cloudinaryResponse.secure_url,
+              bodyLocation: bodyLocation,
+              lesionSize: parseFloat(lesionSize),
+              notes: "Uploaded from mobile app",
+            }),
+          }
+        );
+        const imageApi = await apiResponse.json();
+
+        if (!apiResponse.ok) {
+          throw new Error(imageApi.error || "Failed to create lesion case");
+        }
+        const leasonCaseApi = await fetch(
+          `${ENV.API_URL}/api/mobile/lesion-case`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              imageId: imageApi.id,
+              imageUrl: cloudinaryResponse.secure_url,
+              bodyLocation: bodyLocation,
+              lesionSize: parseFloat(lesionSize),
+              notes: "Uploaded from mobile app",
+            }),
+          }
+        );
+        const lesionCaseData:ApiResponse<LesionCase> = await leasonCaseApi.json();
+        if (!leasonCaseApi.ok) {
+          throw new Error(
+            lesionCaseData.error || "Failed to create lesion case"
+          );
+        }
+        // 2. Set the lesion case data in state
+
+        setLesionCase(lesionCaseData.data);
+        setUploadSuccess(true);
+      } catch (apiError) {
+        console.error("API upload error:", apiError);
+        alert("Failed to save image data. Please try again.");
+      } finally {
+        setUploading(false);
+      }
     } catch (error) {
       console.error("Upload error:", error);
       alert("Failed to upload image. Please try again.");
@@ -258,7 +234,7 @@ export default function CaptureScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-teal-50 dark:bg-slate-900" >
+    <ScrollView className="flex-1 bg-teal-50 dark:bg-slate-900">
       <View className="">
         <Card className="w-full max-w-md mx-auto">
           <View className="px-6 pt-8 pb-4">

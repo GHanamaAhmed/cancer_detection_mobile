@@ -29,7 +29,6 @@ import ENV from "~/lib/env";
 type ForgotPasswordStep = "email" | "verification" | "newPassword";
 
 export default function WelcomeScreen() {
-  console.log("env", process.env.API_URL);
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);

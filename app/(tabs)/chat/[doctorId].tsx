@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -14,17 +14,77 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { useColorScheme } from "~/lib/useColorScheme";
 import * as SecureStore from "expo-secure-store";
 import { Card } from "~/components/ui/card";
-import { AuthResponse } from "~/types/mobile-api";
+import { AuthResponse, Message, User } from "~/types/mobile-api";
 import ENV from "~/lib/env";
+import { pusherClient } from "~/lib/pusher-client";
+import { PusherChannel } from "@pusher/pusher-websocket-react-native";
+type PusherInitResult = {
+  pusherClient: typeof pusherClient;
+  channel: PusherChannel;
+};
 
 export default function ChatScreen() {
-  const { doctorId } = useLocalSearchParams();
+  const { doctorId, DoctoruserId } = useLocalSearchParams();
   const { isDarkColorScheme } = useColorScheme();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
   const [user, setUser] = useState<AuthResponse["user"] | null>(null);
+  const channelName = useMemo(
+    () => `private-chat-${user?.id}-${DoctoruserId}`,
+    [user, doctorId]
+  );
+  console.log("channelName", channelName);
+
   // Dummy current user id – replace with your auth logic
+  useEffect(() => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  }, []);
+  useEffect(() => {
+    if (!user) return;
+    const initializePusher = async (): Promise<
+      PusherInitResult | undefined
+    > => {
+      await pusherClient.init({
+        apiKey: ENV.PUSHER_KEY,
+        cluster: ENV.PUSHER_CLUSTER,
+        authEndpoint: `${ENV.API_URL}/api/pusher/auth`,
+      });
+
+      await pusherClient.connect();
+      const channel = await pusherClient.subscribe({
+        channelName,
+        onEvent: (event) => {
+          console.log("Received event:", event);
+          if (event.eventName === "message") {
+            const message = JSON.parse(event.data) as Message;
+            console.log("Received message:", message);
+
+            setMessages((prevMessages) => [...prevMessages, message]);
+            setTimeout(() => {
+              scrollViewRef.current?.scrollToEnd({ animated: true });
+            }, 100);
+          }
+        },
+      });
+
+      return {
+        pusherClient,
+        channel,
+      };
+    };
+    const f = initializePusher();
+    return () => {
+      f.then((res) => {
+        if (!res) return;
+        const { channel } = res;
+        channel.unsubscribe();
+        console.log("Unsubscribing from channel");
+      });
+    };
+  }, [user]);
   useEffect(() => {
     async function fetchUser() {
       const userString = await SecureStore.getItemAsync("user");
@@ -38,6 +98,7 @@ export default function ChatScreen() {
     fetchUser();
   }, []);
   useEffect(() => {
+    if (!doctorId) return;
     async function fetchMessages() {
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
@@ -81,13 +142,7 @@ export default function ChatScreen() {
         Alert.alert("Error", "Failed to fetch messages", [{ text: "OK" }]);
       }
     }
-
     fetchMessages();
-
-    // Set up polling to fetch new messages every 10 seconds
-    const intervalId = setInterval(fetchMessages, 10000);
-
-    return () => clearInterval(intervalId);
   }, [doctorId]);
 
   async function sendMessage() {
@@ -108,12 +163,7 @@ export default function ChatScreen() {
       });
       const json = await res.json();
       if (json.success) {
-        setMessages((prev) => [...prev, json.data]);
         setInput("");
-        // Scroll to bottom after sending a message
-        setTimeout(() => {
-          scrollViewRef.current?.scrollToEnd({ animated: true });
-        }, 100);
       } else {
         console.error("Error sending message:", json.error);
         Alert.alert("Error", json.error || "Failed to send message", [
