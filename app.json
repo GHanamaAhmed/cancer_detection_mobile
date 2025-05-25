@@ -13,13 +13,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ghanama.cancerdetectionapp",
       "bitcode": false
+    },
+    "locales": {
+      "en": "./languages/english.json"
     },
     "android": {
       "adaptiveIcon": {
@@ -74,12 +76,14 @@
           "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
+      "supportsRTL": true,
       "router": {
         "origin": false
       },

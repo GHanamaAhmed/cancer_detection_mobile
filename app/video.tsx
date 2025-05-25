@@ -21,6 +21,9 @@ import {
   User,
   useStreamVideoClient,
   StreamCall,
+  useCall,
+  useCallStateHooks,
+  CallingState,
 } from "@stream-io/video-react-native-sdk";
 import ENV from "~/lib/env";
 import { CallContent } from "@stream-io/video-react-native-sdk";
@@ -29,18 +32,25 @@ import { CallContent } from "@stream-io/video-react-native-sdk";
 let streamClient: StreamVideoClient | null = null;
 
 function CallRenderer({
-  call,
   doctorName,
   doctorImage,
-  onEndCall,
 }: {
-  call: Call;
   doctorName?: string;
   doctorImage?: string;
-  onEndCall: () => void;
 }) {
+  const router = useRouter();
+
+  const { useCallCallingState } = useCallStateHooks();
+
+  const callingState = useCallCallingState();
+
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      router.back();
+    }
+  }, [callingState, router]);
   return (
-    <StreamCall call={call}>
+    <>
       <SafeAreaView className="bg-black/70 absolute top-0 left-0 right-0 z-10">
         <View className="flex-row items-center p-4">
           <Avatar
@@ -52,18 +62,14 @@ function CallRenderer({
           <Text className="text-white font-medium flex-1">
             {doctorName || "Doctor"}
           </Text>
-          <Pressable
-            className="bg-red-600 h-8 w-8 rounded-full items-center justify-center"
-            onPress={onEndCall}
-          >
+          <Pressable className="bg-red-600 h-8 w-8 rounded-full items-center justify-center">
             <Feather name="phone-off" size={16} color="#fff" />
           </Pressable>
         </View>
       </SafeAreaView>
 
-      {/* Add CallContent to render the call UI */}
       <CallContent />
-    </StreamCall>
+    </>
   );
 }
 
@@ -256,13 +262,12 @@ export default function Video() {
       setError(err.message || "Failed to initialize video call");
       setLoading(false);
     }
-  }, [roomId, appointmentId, router]);
+  }, [roomId]);
 
   // Load call when component mounts
   useEffect(() => {
     initializeCall();
   }, [initializeCall]);
-
 
   // Show loading state
   if (loading) {
@@ -283,12 +288,12 @@ export default function Video() {
   if (call && user && streamClient) {
     return (
       <StreamVideo client={streamClient}>
-        <CallRenderer
-          call={call}
-          doctorName={doctorName as string}
-          doctorImage={doctorImage as string}
-          onEndCall={()=>{router.back()}}
-        />
+        <StreamCall call={call}>
+          <CallRenderer
+            doctorName={doctorName as string}
+            doctorImage={doctorImage as string}
+          />
+        </StreamCall>
       </StreamVideo>
     );
   }

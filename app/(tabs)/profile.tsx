@@ -805,26 +805,6 @@ export default function ProfileScreen() {
               </View>
 
               <View className="gap-3">
-                <TouchableOpacity className="flex-row items-center justify-between py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-700">
-                  <Text className="font-medium text-slate-800 dark:text-white">
-                    Privacy Settings
-                  </Text>
-                  <Feather
-                    name="chevron-right"
-                    size={20}
-                    color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity className="flex-row items-center justify-between py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-700">
-                  <Text className="font-medium text-slate-800 dark:text-white">
-                    Help & Support
-                  </Text>
-                  <Feather
-                    name="chevron-right"
-                    size={20}
-                    color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
-                  />
-                </TouchableOpacity>
                 <Button
                   variant="destructive"
                   onPress={handleSignOut}

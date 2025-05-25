@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Platform,
   GestureResponderEvent,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card } from "~/components/ui/card";
@@ -198,7 +199,7 @@ export default function AppointmentDetailScreen(): React.ReactNode {
 
       // Navigate to the video call screen
       router.push({
-        pathname: "/(tabs)/video",
+        pathname: "/video",
         params: {
           roomId,
           appointmentId: id,
@@ -420,7 +421,16 @@ export default function AppointmentDetailScreen(): React.ReactNode {
         }}
       />
 
-      <ScrollView className="flex-1 p-4">
+      <ScrollView
+        className="flex-1 p-4"
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={fetchAppointmentDetails}
+            colors={[isDarkColorScheme ? "#0ea5e9" : "#0284c7"]}
+          />
+        }
+      >
         {/* Status Badge */}
         <View className="items-center mb-4">
           <Badge

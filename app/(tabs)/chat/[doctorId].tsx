@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   Text,
@@ -8,7 +14,7 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -16,12 +22,8 @@ import * as SecureStore from "expo-secure-store";
 import { Card } from "~/components/ui/card";
 import { AuthResponse, Message, User } from "~/types/mobile-api";
 import ENV from "~/lib/env";
-import { pusherClient } from "~/lib/pusher-client";
+import { usePusher } from "~/lib/pusher-client";
 import { PusherChannel } from "@pusher/pusher-websocket-react-native";
-type PusherInitResult = {
-  pusherClient: typeof pusherClient;
-  channel: PusherChannel;
-};
 
 export default function ChatScreen() {
   const { doctorId, DoctoruserId } = useLocalSearchParams();
@@ -30,12 +32,12 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
   const [user, setUser] = useState<AuthResponse["user"] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const channelName = useMemo(
     () => `private-chat-${user?.id}-${DoctoruserId}`,
     [user, doctorId]
   );
-  console.log("channelName", channelName);
-
+  const { pusherClient } = usePusher();
   // Dummy current user id – replace with your auth logic
   useEffect(() => {
     setTimeout(() => {
@@ -43,48 +45,32 @@ export default function ChatScreen() {
     }, 100);
   }, []);
   useEffect(() => {
-    if (!user) return;
-    const initializePusher = async (): Promise<
-      PusherInitResult | undefined
-    > => {
-      await pusherClient.init({
-        apiKey: ENV.PUSHER_KEY,
-        cluster: ENV.PUSHER_CLUSTER,
-        authEndpoint: `${ENV.API_URL}/api/pusher/auth`,
-      });
+    if (!pusherClient || !user) return;
 
-      await pusherClient.connect();
-      const channel = await pusherClient.subscribe({
-        channelName,
-        onEvent: (event) => {
-          console.log("Received event:", event);
-          if (event.eventName === "message") {
-            const message = JSON.parse(event.data) as Message;
-            console.log("Received message:", message);
-
-            setMessages((prevMessages) => [...prevMessages, message]);
-            setTimeout(() => {
-              scrollViewRef.current?.scrollToEnd({ animated: true });
-            }, 100);
-          }
-        },
-      });
-
-      return {
-        pusherClient,
-        channel,
-      };
-    };
-    const f = initializePusher();
+    pusherClient.subscribe({
+      channelName,
+      onEvent: (event) => {
+        if (event.eventName === "message") {
+          const message = JSON.parse(event.data) as Message;
+          setMessages((prevMessages) => [...prevMessages, message]);
+          setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: true });
+          }, 100);
+        }
+      },
+      onSubscriptionError: (error) => {
+        console.error("Subscription error:", error);
+        Alert.alert("Error", "Failed to subscribe to chat channel", [
+          { text: "OK" },
+        ]);
+      },
+    });
     return () => {
-      f.then((res) => {
-        if (!res) return;
-        const { channel } = res;
-        channel.unsubscribe();
-        console.log("Unsubscribing from channel");
-      });
+      if (pusherClient) {
+        pusherClient.unsubscribe({ channelName });
+      }
     };
-  }, [user]);
+  }, [pusherClient, user]);
   useEffect(() => {
     async function fetchUser() {
       const userString = await SecureStore.getItemAsync("user");
@@ -97,54 +83,61 @@ export default function ChatScreen() {
     }
     fetchUser();
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!doctorId) return;
+      fetchMessages();
+    }, [doctorId])
+  );
+  async function fetchMessages() {
+    const token = await SecureStore.getItemAsync("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `${ENV.API_URL}/api/mobile/chat/messages?doctorId=${doctorId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const json = await res.json();
+
+      if (json.success) {
+        setMessages(json.data);
+
+        // Scroll to bottom after messages load
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        }, 100);
+      } else {
+        console.error("Error in response:", json.error);
+        Alert.alert("Error", json.error || "Failed to fetch messages", [
+          { text: "OK" },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      Alert.alert("Error", "Failed to fetch messages", [{ text: "OK" }]);
+    }
+  }
   useEffect(() => {
     if (!doctorId) return;
-    async function fetchMessages() {
-      const token = await SecureStore.getItemAsync("token");
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
 
-      try {
-        console.log(`Fetching messages for doctor ID: ${doctorId}`);
-
-        const res = await fetch(
-          `${ENV.API_URL}/api/mobile/chat/messages?doctorId=${doctorId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const json = await res.json();
-        console.log("API response:", JSON.stringify(json, null, 2));
-
-        if (json.success) {
-          console.log(`Retrieved ${json.data.length} messages`);
-          setMessages(json.data);
-
-          // Scroll to bottom after messages load
-          setTimeout(() => {
-            scrollViewRef.current?.scrollToEnd({ animated: false });
-          }, 100);
-        } else {
-          console.error("Error in response:", json.error);
-          Alert.alert("Error", json.error || "Failed to fetch messages", [
-            { text: "OK" },
-          ]);
-        }
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-        Alert.alert("Error", "Failed to fetch messages", [{ text: "OK" }]);
-      }
-    }
     fetchMessages();
   }, [doctorId]);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchMessages();
+    }, [doctorId])
+  );
   async function sendMessage() {
     const token = await SecureStore.getItemAsync("token");
     if (!token) {
@@ -152,6 +145,8 @@ export default function ChatScreen() {
       return;
     }
     if (!input.trim()) return;
+
+    setIsLoading(true);
     try {
       const res = await fetch(`${ENV.API_URL}/api/mobile/chat/messages`, {
         method: "POST",
@@ -173,6 +168,8 @@ export default function ChatScreen() {
     } catch (error) {
       console.error("Error sending message:", error);
       Alert.alert("Error", "Failed to send message", [{ text: "OK" }]);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -181,7 +178,6 @@ export default function ChatScreen() {
       className="flex-1 bg-teal-50 dark:bg-slate-900"
       edges={["top"]}
     >
-      <ThemeToggle />
       <Card className="w-full max-w-md mx-auto flex-1">
         <View className="flex-row items-center p-4 border-b border-gray-100 dark:border-gray-700">
           <TouchableOpacity onPress={() => router.back()} className="mr-2">
@@ -258,8 +254,13 @@ export default function ChatScreen() {
           <TouchableOpacity
             className="ml-2 h-12 w-12 rounded-full bg-teal-500 items-center justify-center"
             onPress={sendMessage}
+            disabled={isLoading}
           >
-            <Feather name="send" size={20} color="white" />
+            {isLoading ? (
+              <Feather name="loader" size={20} color="white" />
+            ) : (
+              <Feather name="send" size={20} color="white" />
+            )}
           </TouchableOpacity>
         </View>
       </Card>

@@ -15,6 +15,7 @@
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		8E48FC32CF9E489A9930FA2C /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = B006143B823F4118B90EDED0 /* noop-file.swift */; };
+		0F6740BFC9604D68A31FDDB5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EEB358E9C8BF41D8BF750C27 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-cancerdetectionapp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		B006143B823F4118B90EDED0 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "cancerdetectionapp/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
 		DA94B79C168046F0B5B9C65F /* cancerdetectionapp-Bridging-Header.h */ = {isa = PBXFileReference; name = "cancerdetectionapp-Bridging-Header.h"; path = "cancerdetectionapp/cancerdetectionapp-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		EEB358E9C8BF41D8BF750C27 /* InfoPlist.strings */ = {isa = PBXFileReference; name = "InfoPlist.strings"; path = "en.lproj/InfoPlist.strings"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.strings; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
+				786D0703770D42C98774EFA3 /* en.lproj */,
 			);
 			name = Supporting;
 			path = cancerdetectionapp/Supporting;
@@ -135,6 +138,15 @@
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
+		};
+		786D0703770D42C98774EFA3 /* en.lproj */ = {
+			isa = "PBXGroup";
+			children = (
+				EEB358E9C8BF41D8BF750C27 /* InfoPlist.strings */,
+			);
+			name = en.lproj;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -199,6 +211,7 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				AAB835316640402EAD5222D3 /* cancerdetectionapp-Bridging-Header.h in Resources */,
+				0F6740BFC9604D68A31FDDB5 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
