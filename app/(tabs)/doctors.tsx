@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -27,7 +34,39 @@ export default function FindDoctorScreen() {
   const [doctorDetail, setDoctorDetail] = useState<DoctorDetail | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-
+  const [refreshing, setRefreshing] = useState(false);
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        console.error("No token found");
+        Alert.alert("Authentication Error", "Please login again");
+        setRefreshing(false);
+        return;
+      }
+      const response = await fetch(
+        `${ENV.API_URL}/api/mobile/doctors?limit=10`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const json = await response.json();
+      if (json.success) {
+        setDoctors(json.data.doctors);
+      } else {
+        console.error("Error fetching doctors list:", json.error);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors list:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
   // Fetch doctors list on mount
   useEffect(() => {
     async function fetchDoctors() {
@@ -238,7 +277,13 @@ export default function FindDoctorScreen() {
       className="flex-1 bg-teal-50 dark:bg-slate-900"
       edges={["top"]}
     >
-      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+      >
         <Card className="w-full max-w-md mx-auto">
           {/* Header */}
           <View className="px-6 pt-6 pb-4 flex-row items-center">

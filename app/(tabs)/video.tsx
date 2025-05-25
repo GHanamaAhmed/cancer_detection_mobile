@@ -106,7 +106,6 @@ export default function Video() {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        handleEndCall();
         return true;
       }
     );
@@ -264,57 +263,6 @@ export default function Video() {
     initializeCall();
   }, [initializeCall]);
 
-  const handleEndCall = async () => {
-    Alert.alert(
-      "End Call",
-      "Are you sure you want to end this call?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "End Call",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // Leave the call
-              if (call) {
-                await call.leave();
-              }
-
-              const token = await SecureStore.getItemAsync("token");
-              if (token && roomId) {
-                // Update room status to ended
-                await fetch(`${ENV.API_URL}/api/mobile/video-calls`, {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({
-                    roomId,
-                    status: "ENDED",
-                  }),
-                });
-              }
-
-              // Navigate back to appointment detail
-              if (appointmentId) {
-                router.replace(`/appointment-detail?id=${appointmentId}`);
-              } else {
-                router.replace("/appointments");
-              }
-            } catch (err) {
-              console.error("Error ending call:", err);
-              router.replace("/appointments");
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
 
   // Show loading state
   if (loading) {
@@ -339,7 +287,7 @@ export default function Video() {
           call={call}
           doctorName={doctorName as string}
           doctorImage={doctorImage as string}
-          onEndCall={handleEndCall}
+          onEndCall={()=>{router.back()}}
         />
       </StreamVideo>
     );

@@ -177,19 +177,16 @@ export default function AppointmentDetailScreen(): React.ReactNode {
       }
 
       // Get or create a video call room
-      const response = await fetch(
-        `${ENV.API_URL}/api/mobile/video-calls`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            appointmentId: id,
-          }),
-        }
-      );
+      const response = await fetch(`${ENV.API_URL}/api/mobile/video-calls`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          appointmentId: id,
+        }),
+      });
 
       const data = await response.json();
 

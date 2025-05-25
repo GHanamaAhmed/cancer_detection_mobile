@@ -67,6 +67,11 @@ export default function CaptureScreen() {
   // Permissions hook
   const [permission, requestPermission] = useCameraPermissions();
   const [lesionCase, setLesionCase] = useState<any>(null);
+
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzed, setAnalyzed] = useState(false);
+  const [imageId, setImageId] = useState<string | null>(null);
+
   useEffect(() => {
     if (permission && !permission.granted) {
       requestPermission();
@@ -104,6 +109,7 @@ export default function CaptureScreen() {
     setFlashMode((prevMode) => (prevMode === "off" ? "on" : "off"));
   };
 
+  // Split the function into upload and analyze
   const uploadImage = async () => {
     if (!imageUri) return;
 
@@ -113,16 +119,11 @@ export default function CaptureScreen() {
       return;
     }
 
-    if (!lesionSize || isNaN(parseFloat(lesionSize))) {
-      alert("Please enter a valid lesion size");
-      return;
-    }
 
     setUploading(true);
-    setUploadSuccess(false);
 
     try {
-      // Upload the image using our direct API upload
+      // Upload the image to Cloudinary
       const cloudinaryResponse = await uploadToCloudinary(imageUri);
 
       if (!cloudinaryResponse) {
@@ -137,14 +138,14 @@ export default function CaptureScreen() {
         imageUrl: cloudinaryResponse.secure_url,
       });
 
-      // Now, send data to your API
+      // Create image record in your API
       try {
         const token = await SecureStore.getItemAsync("token");
         if (!token) {
           throw new Error("Authentication token not found");
         }
 
-        // 1. First upload the image to your API
+        // Upload the image to your API
         const apiResponse = await fetch(
           `${ENV.API_URL}/api/mobile/upload-image`,
           {
@@ -162,48 +163,76 @@ export default function CaptureScreen() {
             }),
           }
         );
-        const imageApi = await apiResponse.json();
+        const imageData = await apiResponse.json();
 
         if (!apiResponse.ok) {
-          throw new Error(imageApi.error || "Failed to create lesion case");
+          throw new Error(imageData.error || "Failed to upload image");
         }
-        const leasonCaseApi = await fetch(
-          `${ENV.API_URL}/api/mobile/lesion-case`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              imageId: imageApi.id,
-              imageUrl: cloudinaryResponse.secure_url,
-              bodyLocation: bodyLocation,
-              lesionSize: parseFloat(lesionSize),
-              notes: "Uploaded from mobile app",
-            }),
-          }
-        );
-        const lesionCaseData:ApiResponse<LesionCase> = await leasonCaseApi.json();
-        if (!leasonCaseApi.ok) {
-          throw new Error(
-            lesionCaseData.error || "Failed to create lesion case"
-          );
-        }
-        // 2. Set the lesion case data in state
 
-        setLesionCase(lesionCaseData.data);
+        // Store the image ID for later analysis
+        setImageId(imageData.id);
         setUploadSuccess(true);
       } catch (apiError) {
         console.error("API upload error:", apiError);
         alert("Failed to save image data. Please try again.");
-      } finally {
-        setUploading(false);
       }
     } catch (error) {
       console.error("Upload error:", error);
       alert("Failed to upload image. Please try again.");
+    } finally {
       setUploading(false);
+    }
+  };
+
+  // New function to analyze the uploaded image
+  const analyzeImage = async () => {
+    if (!imageId || !cloudinaryData) {
+      alert("Please upload an image first");
+      return;
+    }
+
+    setAnalyzing(true);
+
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      // Request lesion case analysis
+      const lesionCaseResponse = await fetch(
+        `${ENV.API_URL}/api/mobile/lesion-case`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            imageId: imageId,
+            imageUrl: cloudinaryData.imageUrl,
+            bodyLocation: bodyLocation,
+            lesionSize: parseFloat(lesionSize),
+            notes: "Uploaded from mobile app",
+          }),
+        }
+      );
+
+      const lesionCaseData: ApiResponse<LesionCase> =
+        await lesionCaseResponse.json();
+
+      if (!lesionCaseResponse.ok) {
+        throw new Error(lesionCaseData.error || "Failed to analyze lesion");
+      }
+
+      // Set the lesion case data
+      setLesionCase(lesionCaseData.data);
+      setAnalyzed(true);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      alert("Failed to analyze image. Please try again.");
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -391,7 +420,6 @@ export default function CaptureScreen() {
                     </View>
                   )}
                 </View>
-
                 <View className="mb-4">
                   <Text className="font-medium mb-2 text-slate-800 dark:text-white">
                     Lesion Size (mm)
@@ -407,7 +435,7 @@ export default function CaptureScreen() {
                     onChangeText={setLesionSize}
                   />
                 </View>
-
+                {/* Action buttons with different stages */}
                 <View className="flex-row gap-4">
                   <Button
                     variant="outline"
@@ -415,6 +443,10 @@ export default function CaptureScreen() {
                       setCaptured(false);
                       setImageUri(null);
                       setUploadSuccess(false);
+                      setAnalyzed(false);
+                      setImageId(null);
+                      setCloudinaryData(null);
+                      setLesionCase(null);
                     }}
                     className="flex-1"
                     icon={
@@ -428,48 +460,65 @@ export default function CaptureScreen() {
                   >
                     Retake
                   </Button>
-                  <Button
-                    onPress={uploadImage}
-                    className="flex-1"
-                    icon={
-                      uploading ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <Feather name="upload-cloud" size={18} color="white" />
-                      )
-                    }
-                    iconPosition="left"
-                    disabled={uploading || uploadSuccess}
-                  >
-                    {uploading
-                      ? "Uploading..."
-                      : uploadSuccess
-                      ? "Uploaded!"
-                      : "Upload"}
-                  </Button>
+
+                  {!uploadSuccess ? (
+                    <Button
+                      onPress={uploadImage}
+                      className="flex-1"
+                      icon={
+                        uploading ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Feather
+                            name="upload-cloud"
+                            size={18}
+                            color="white"
+                          />
+                        )
+                      }
+                      iconPosition="left"
+                      disabled={uploading}
+                    >
+                      {uploading ? "Uploading..." : "Upload"}
+                    </Button>
+                  ) : !analyzed ? (
+                    <Button
+                      onPress={analyzeImage}
+                      className="flex-1"
+                      icon={
+                        analyzing ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <Feather name="search" size={18} color="white" />
+                        )
+                      }
+                      iconPosition="left"
+                      disabled={analyzing}
+                    >
+                      {analyzing ? "Analyzing..." : "Analyze Image"}
+                    </Button>
+                  ) : null}
                 </View>
 
-                {uploadSuccess && (
+                {/* View Results button - only shown after analysis is complete */}
+                {analyzed && lesionCase && (
                   <Button
                     onPress={() => {
-                      if (cloudinaryData) {
-                        router.push({
-                          pathname: "/result-detail",
-                          params: { id: lesionCase?.data?.id },
-                        });
-                      }
+                      router.push({
+                        pathname: "/result-detail",
+                        params: { id: lesionCase.id },
+                      });
                     }}
                     className="mt-3"
-                    icon={
-                      <Feather name="arrow-right" size={18} color="white" />
-                    }
-                    iconPosition="right"
+                    icon={<Feather name="eye" size={18} color="white" />}
+                    iconPosition="left"
                   >
-                    Continue
+                    View Results
                   </Button>
                 )}
               </View>
             ) : (
+              // Camera capture buttons remain unchanged
               <View className="gap-4">
                 <Button
                   onPress={takePicture}

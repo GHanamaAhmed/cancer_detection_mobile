@@ -11,6 +11,7 @@ import {
   Animated,
   Platform,
   StyleSheet,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams, router } from "expo-router";
@@ -37,6 +38,7 @@ export default function ResultDetailScreen() {
   const { isDarkColorScheme } = useColorScheme();
   const params = useLocalSearchParams<{ id: string }>();
   const { width } = useWindowDimensions();
+  const [refreshing, setRefreshing] = useState(false);
 
   const [caseDetail, setCaseDetail] = useState<ResultDetailData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,9 +50,19 @@ export default function ResultDetailScreen() {
   // Animated values for tab transitions
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchCaseDetail()
+      .then(() => setRefreshing(false))
+      .catch((err) => {
+        console.error("Error refreshing case detail:", err);
+        setRefreshing(false);
+      });
+  };
   /**
    * Fetches case detail data from API
    */
+
   const fetchCaseDetail = async (): Promise<void> => {
     try {
       setLoading(true);
@@ -120,7 +132,7 @@ export default function ResultDetailScreen() {
    */
   const getRiskBadge = (risk: string) => {
     console.log("Risk Level:", risk);
-    
+
     switch (risk.toUpperCase()) {
       case RiskLevel.LOW:
         return {
@@ -904,7 +916,12 @@ export default function ResultDetailScreen() {
           </Button>
         </View>
       ) : (
-        <ScrollView className="flex-1 p-4">
+        <ScrollView
+          className="flex-1 p-4"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        >
           {/* Risk Level Banner */}
           {caseDetail?.riskLevel && (
             <View
