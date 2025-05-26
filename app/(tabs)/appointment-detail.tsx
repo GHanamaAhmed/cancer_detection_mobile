@@ -674,7 +674,10 @@ export default function AppointmentDetailScreen(): React.ReactNode {
           {/* Message Button */}
           <Button
             variant="outline"
-            onPress={() => router.push(`/chat/${appointment.doctor.id}`)}
+            onPress={() =>{
+              console.log("id", appointment.doctor.id);
+              router.push(`/chat/${appointment.doctor.id}`)
+            }}
             className="border-blue-200 dark:border-blue-800"
           >
             <View className="flex-row items-center">

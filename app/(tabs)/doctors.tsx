@@ -268,9 +268,7 @@ export default function FindDoctorScreen() {
     });
   };
 
-  const handleVideoCall = () => {
-    router.push("/(tabs)/video");
-  };
+  
 
   return (
     <SafeAreaView
@@ -512,14 +510,6 @@ export default function FindDoctorScreen() {
                     iconPosition="left"
                   >
                     Chat
-                  </Button>
-                  <Button
-                    onPress={handleVideoCall}
-                    className="flex-1"
-                    icon={<Feather name="video" size={18} color="white" />}
-                    iconPosition="left"
-                  >
-                    Video Call
                   </Button>
                 </View>
               </View>

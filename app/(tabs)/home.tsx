@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  FlatList,
+  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
-import { ThemeToggle } from "~/components/theme-toggle";
 import { Avatar } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import { useColorScheme } from "~/lib/useColorScheme";
@@ -19,6 +20,18 @@ import { Feather } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { DashboardData } from "~/types/mobile-api";
 import ENV from "~/lib/env";
+import { usePusher } from "~/lib/pusher-client";
+import { Audio } from "expo-av";
+// Define Notification type
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  type: string;
+  actionUrl?: string;
+};
 
 export default function HomeScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -28,6 +41,175 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Notification states
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { pusherClient } = usePusher();
+
+  const [notificationSound, setNotificationSound] =
+    useState<Audio.Sound | null>(null);
+
+  // Load sound on component mount
+  useEffect(() => {
+    async function loadSound() {
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require("~/assets/mixkit-long-pop-2358.mp3"),
+          {
+            shouldPlay: false,
+          }
+        );
+        setNotificationSound(sound);
+      } catch (error) {
+        console.error("Failed to load notification sound:", error);
+      }
+    }
+
+    loadSound();
+
+    // Unload sound on unmount
+    return () => {
+      if (notificationSound) {
+        notificationSound.unloadAsync();
+      }
+    };
+  }, []);
+
+  const playNotificationSound = async () => {
+    try {
+      console.log("Playing notification sound");
+
+      // Create a new sound instance each time
+      const soundObject = new Audio.Sound();
+
+      // Load and play in one operation
+      await soundObject.loadAsync(require("~/assets/mixkit-long-pop-2358.mp3"));
+      await soundObject.playAsync();
+
+      // Clean up when done
+      soundObject.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          soundObject.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.error("Failed to play notification sound:", error);
+    }
+  };
+  // Fetch user ID on mount
+  useEffect(() => {
+    async function fetchUserId() {
+      try {
+        const userString = await SecureStore.getItemAsync("user");
+        if (userString) {
+          const userData = JSON.parse(userString);
+          setUserId(userData.id);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }
+
+    fetchUserId();
+  }, []);
+
+  // Set up Pusher for real-time notifications
+  useEffect(() => {
+    if (!userId || !pusherClient) return; // Remove notificationSound check
+
+    const channelName = `private-notifications-${userId}`;
+
+    pusherClient.subscribe({
+      channelName,
+      onEvent: (event) => {
+        if (event.eventName === "new-notification") {
+          const notification = JSON.parse(event.data) as Notification;
+          console.log("Received new notification:", notification);
+
+          // Play sound on main thread
+          setTimeout(() => {
+            playNotificationSound();
+          }, 0);
+
+          setNotifications((prev) => [notification, ...prev]);
+        } else if (event.eventName === "notification-read") {
+          const data = JSON.parse(event.data) as { id: string };
+          setNotifications((prev) =>
+            prev.map((notif) =>
+              notif.id === data.id ? { ...notif, isRead: true } : notif
+            )
+          );
+        }
+      },
+      onSubscriptionError: (error) => {
+        console.error("Notification subscription error:", error);
+      },
+    });
+
+    return () => {
+      console.log("Unsubscribing from notifications channel");
+      if (pusherClient) {
+        pusherClient.unsubscribe({ channelName });
+      }
+    };
+  }, [userId, pusherClient]);
+
+  // Fetch notifications
+  useEffect(() => {
+    fetchNotifications();
+  }, [userId]);
+
+  const fetchNotifications = async () => {
+    if (!userId) return;
+
+    setIsLoadingNotifications(true);
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) return;
+
+      const response = await fetch(`${ENV.API_URL}/api/mobile/notifications`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.notifications) {
+        setNotifications(data.notifications);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  };
+
+  // Mark notification as read
+  const markAsRead = async (id: string) => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      if (!token) return;
+
+      await fetch(`${ENV.API_URL}/api/mobile/notifications/${id}/read`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === id ? { ...notif, isRead: true } : notif
+        )
+      );
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
 
   const fetchDashboardData = async (showRefresh = false) => {
     try {
@@ -65,14 +247,111 @@ export default function HomeScreen() {
       if (showRefresh) setRefreshing(false);
     }
   };
+  const handleRefresh = () => {
+    fetchDashboardData(true);
+    fetchNotifications();
+  };
 
+  // Calculate unread notifications count
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  // Notification Modal Component
+  const NotificationModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showNotifications}
+      onRequestClose={() => setShowNotifications(false)}
+    >
+      <View className="flex-1 justify-end bg-black/30">
+        <View className="bg-white dark:bg-slate-800 rounded-t-3xl h-2/3">
+          <View className="flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+            <Text className="text-xl font-bold text-slate-800 dark:text-white">
+              Notifications
+            </Text>
+            <TouchableOpacity onPress={() => setShowNotifications(false)}>
+              <Feather
+                name="x"
+                size={24}
+                color={isDarkColorScheme ? "#f1f5f9" : "#334155"}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {isLoadingNotifications ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator
+                size="large"
+                color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
+              />
+              <Text className="mt-2 text-slate-600 dark:text-slate-400">
+                Loading notifications...
+              </Text>
+            </View>
+          ) : notifications.length > 0 ? (
+            <FlatList
+              data={notifications}
+              keyExtractor={(item) => item.id}
+              contentContainerClassName="p-4"
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  className={`mb-4 p-3 rounded-lg border ${
+                    !item.isRead
+                      ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                      : "border-gray-200 dark:border-gray-700"
+                  }`}
+                  onPress={() => {
+                    if (!item.isRead) {
+                      markAsRead(item.id);
+                    }
+                    if (item.actionUrl) {
+                      setShowNotifications(false);
+                    }
+                  }}
+                >
+                  <View className="flex-row justify-between items-center">
+                    <Text className="font-medium text-slate-800 dark:text-white">
+                      {item.title}
+                    </Text>
+                    {!item.isRead && (
+                      <View className="h-2 w-2 rounded-full bg-blue-500" />
+                    )}
+                  </View>
+                  <Text className="text-slate-600 dark:text-slate-300 my-1">
+                    {item.message}
+                  </Text>
+                  <Text className="text-xs text-gray-400">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              ItemSeparatorComponent={() => <View className="h-1" />}
+              refreshControl={
+                <RefreshControl
+                  refreshing={isLoadingNotifications}
+                  onRefresh={fetchNotifications}
+                />
+              }
+            />
+          ) : (
+            <View className="flex-1 items-center justify-center p-4">
+              <Feather
+                name="bell-off"
+                size={40}
+                color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
+              />
+              <Text className="mt-4 text-center text-slate-600 dark:text-slate-400">
+                No notifications yet
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
   useEffect(() => {
     fetchDashboardData();
   }, []);
-
-  const handleRefresh = () => {
-    fetchDashboardData(true);
-  };
 
   const getRiskBadge = (risk: string) => {
     switch (risk.toLocaleUpperCase()) {
@@ -119,6 +398,9 @@ export default function HomeScreen() {
       className="flex-1 bg-teal-50 dark:bg-slate-900"
       edges={["top"]}
     >
+      {/* Notification Modal */}
+      <NotificationModal />
+
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1, padding: 0 }}
@@ -159,28 +441,47 @@ export default function HomeScreen() {
             ) : (
               <>
                 {/* User Profile Section */}
-                <View className="flex-row items-center mb-6">
-                  <Avatar
-                    fallback={
-                      dashboardData?.user?.fullName
-                        ?.split(" ")
-                        .map((n) => n[0])
-                        .join("") || "U"
-                    }
-                    source={
-                      dashboardData?.user?.profileImage ||
-                      "https://ui-avatars.com/api/?name=User"
-                    }
-                    className="h-16 w-16 mr-4"
-                  />
-                  <View>
-                    <Text className="text-xl font-bold text-slate-800 dark:text-white">
-                      {dashboardData?.user?.fullName || "Welcome"}
-                    </Text>
-                    <Text className="text-sm text-slate-500 dark:text-slate-400">
-                      Let's check your skin health today
-                    </Text>
+                <View className="flex-row items-center w-full justify-between">
+                  <View className="flex-row items-center mb-6">
+                    <Avatar
+                      fallback={
+                        dashboardData?.user?.fullName
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("") || "U"
+                      }
+                      source={
+                        dashboardData?.user?.profileImage ||
+                        "https://ui-avatars.com/api/?name=User"
+                      }
+                      className="h-16 w-16 mr-4"
+                    />
+                    <View>
+                      <Text className="text-xl font-bold text-slate-800 dark:text-white">
+                        {dashboardData?.user?.fullName || "Welcome"}
+                      </Text>
+                      <Text className="text-sm text-slate-500 dark:text-slate-400">
+                        Let's check your skin health today
+                      </Text>
+                    </View>
                   </View>
+                  <TouchableOpacity
+                    className="relative mb-6"
+                    onPress={() => setShowNotifications(true)}
+                  >
+                    <Feather
+                      name="bell"
+                      size={24}
+                      color={isDarkColorScheme ? "#f1f5f9" : "#334155"}
+                    />
+                    {unreadCount > 0 && (
+                      <View className="absolute -right-2 -top-2 h-5 w-5 bg-red-500 rounded-full items-center justify-center">
+                        <Text className="text-xs text-white font-bold">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
                 </View>
 
                 {/* Health Analytics */}
@@ -356,7 +657,7 @@ export default function HomeScreen() {
                     <TouchableOpacity
                       onPress={() =>
                         router.push({
-                          pathname: "/(tabs)/appointments",
+                          pathname: "/(tabs)/appointment-detail",
                           params: { id: dashboardData.upcomingAppointment?.id },
                         })
                       }
