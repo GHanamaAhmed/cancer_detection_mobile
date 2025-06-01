@@ -28,6 +28,7 @@ import { cld, uploadToCloudinary } from "~/lib/cloudinary";
 import * as SecureStore from "expo-secure-store";
 import { TextInput } from "react-native";
 import { ApiResponse, LesionCase } from "~/types/mobile-api";
+import i18n from "~/i18n";
 
 // Body location enum matching your Prisma schema
 enum BodyLocation {
@@ -118,7 +119,6 @@ export default function CaptureScreen() {
       alert("Please select a body location");
       return;
     }
-
 
     setUploading(true);
 
@@ -241,7 +241,7 @@ export default function CaptureScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-teal-50 dark:bg-slate-900">
         <Text className="text-slate-800 dark:text-white">
-          Requesting camera permission...
+          {i18n.t("capture.noPermission")}
         </Text>
       </View>
     );
@@ -250,28 +250,27 @@ export default function CaptureScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-teal-50 dark:bg-slate-900">
         <Text className="text-slate-800 dark:text-white">
-          No access to camera
+          {i18n.t("capture.noAccess")}
         </Text>
         <Button onPress={requestPermission} className="mt-4">
-          Allow Camera
+          {i18n.t("capture.allowCamera")}
         </Button>
         <Button onPress={pickImage} variant="outline" className="mt-2">
-          Select from Gallery
+          {i18n.t("capture.selectGallery")}
         </Button>
       </View>
     );
   }
-
   return (
     <ScrollView className="flex-1 bg-teal-50 dark:bg-slate-900">
       <View className="">
         <Card className="w-full max-w-md mx-auto">
           <View className="px-6 pt-8 pb-4">
             <Text className="text-2xl font-bold mb-1 text-slate-800 dark:text-white">
-              Capture Image
+              {i18n.t("capture.title")}
             </Text>
             <Text className="text-gray-500 dark:text-gray-400">
-              Position within the frame and take a clear photo
+              {i18n.t("capture.subtitle")}
             </Text>
           </View>
 
@@ -290,7 +289,7 @@ export default function CaptureScreen() {
                 flash={flashMode}
                 focusable={true}
               >
-                <View className="flex-1 border-[40px] border-dashed border-white/30 dark:border-white/20">
+                <View className="flex-1">
                   <View className="flex-1 items-center justify-center">
                     <View className="items-center">
                       <Feather
@@ -299,7 +298,7 @@ export default function CaptureScreen() {
                         color="rgba(255,255,255,0.5)"
                       />
                       <Text className="text-white opacity-50 mt-4">
-                        Position your skin within the frame
+                        {i18n.t("capture.subtitle")}
                       </Text>
                     </View>
                   </View>
@@ -308,30 +307,9 @@ export default function CaptureScreen() {
             )}
           </View>
 
-          {!captured && (
-            <View className="px-6 py-4">
-              <View className="gap-4">
-                {/* Flash toggle button */}
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center">
-                    <View className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/30 items-center justify-center mr-3">
-                      <Feather name="zap" size={16} color="#00c4b4" />
-                    </View>
-                    <Text className="font-medium text-slate-800 dark:text-white">
-                      Flash
-                    </Text>
-                  </View>
-                  <Button
-                    variant={flashMode == "on" ? "primary" : "outline"}
-                    onPress={toggleFlash}
-                    className=""
-                  >
-                    {flashMode == "on" ? "On" : "Off"}
-                  </Button>
-                </View>
-              </View>
-
-              <View className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+          {!captured ? (
+            <View className="px-6 py-4 flex-col gap-4">
+              <View className="mt-6 pt-6">
                 <Text className="font-medium mb-3 text-slate-800 dark:text-white">
                   Capture Guidelines
                 </Text>
@@ -366,159 +344,6 @@ export default function CaptureScreen() {
                   ))}
                 </View>
               </View>
-            </View>
-          )}
-
-          <View className="p-6">
-            {captured ? (
-              <View className="gap-4">
-                {/* Add Body Location and Lesion Size selectors */}
-                <View className="mb-4">
-                  <Text className="font-medium mb-2 text-slate-800 dark:text-white">
-                    Body Location
-                  </Text>
-                  <TouchableOpacity
-                    className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600"
-                    onPress={() =>
-                      setShowBodyLocationPicker(!showBodyLocationPicker)
-                    }
-                  >
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-slate-800 dark:text-white">
-                        {bodyLocation.replace("_", " ")}
-                      </Text>
-                      <Feather
-                        name={
-                          showBodyLocationPicker ? "chevron-up" : "chevron-down"
-                        }
-                        size={16}
-                        color={isDarkColorScheme ? "#fff" : "#334155"}
-                      />
-                    </View>
-                  </TouchableOpacity>
-
-                  {showBodyLocationPicker && (
-                    <View className="mt-1 p-2 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                      {Object.values(BodyLocation).map((location) => (
-                        <TouchableOpacity
-                          key={location}
-                          className={`p-3 rounded-md ${
-                            bodyLocation === location
-                              ? "bg-teal-100 dark:bg-teal-900/30"
-                              : ""
-                          }`}
-                          onPress={() => {
-                            setBodyLocation(location);
-                            setShowBodyLocationPicker(false);
-                          }}
-                        >
-                          <Text className="text-slate-800 dark:text-white">
-                            {location.replace("_", " ")}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
-                </View>
-                <View className="mb-4">
-                  <Text className="font-medium mb-2 text-slate-800 dark:text-white">
-                    Lesion Size (mm)
-                  </Text>
-                  <TextInput
-                    className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600 text-slate-800 dark:text-white"
-                    placeholder="Enter size in millimeters"
-                    placeholderTextColor={
-                      isDarkColorScheme ? "#94a3b8" : "#64748b"
-                    }
-                    keyboardType="numeric"
-                    value={lesionSize}
-                    onChangeText={setLesionSize}
-                  />
-                </View>
-                {/* Action buttons with different stages */}
-                <View className="flex-row gap-4">
-                  <Button
-                    variant="outline"
-                    onPress={() => {
-                      setCaptured(false);
-                      setImageUri(null);
-                      setUploadSuccess(false);
-                      setAnalyzed(false);
-                      setImageId(null);
-                      setCloudinaryData(null);
-                      setLesionCase(null);
-                    }}
-                    className="flex-1"
-                    icon={
-                      <Feather
-                        name="refresh-cw"
-                        size={18}
-                        color={isDarkColorScheme ? "#fff" : "#334155"}
-                      />
-                    }
-                    iconPosition="left"
-                  >
-                    Retake
-                  </Button>
-
-                  {!uploadSuccess ? (
-                    <Button
-                      onPress={uploadImage}
-                      className="flex-1"
-                      icon={
-                        uploading ? (
-                          <ActivityIndicator size="small" color="white" />
-                        ) : (
-                          <Feather
-                            name="upload-cloud"
-                            size={18}
-                            color="white"
-                          />
-                        )
-                      }
-                      iconPosition="left"
-                      disabled={uploading}
-                    >
-                      {uploading ? "Uploading..." : "Upload"}
-                    </Button>
-                  ) : !analyzed ? (
-                    <Button
-                      onPress={analyzeImage}
-                      className="flex-1"
-                      icon={
-                        analyzing ? (
-                          <ActivityIndicator size="small" color="white" />
-                        ) : (
-                          <Feather name="search" size={18} color="white" />
-                        )
-                      }
-                      iconPosition="left"
-                      disabled={analyzing}
-                    >
-                      {analyzing ? "Analyzing..." : "Analyze Image"}
-                    </Button>
-                  ) : null}
-                </View>
-
-                {/* View Results button - only shown after analysis is complete */}
-                {analyzed && lesionCase && (
-                  <Button
-                    onPress={() => {
-                      router.push({
-                        pathname: "/result-detail",
-                        params: { id: lesionCase.id },
-                      });
-                    }}
-                    className="mt-3"
-                    icon={<Feather name="eye" size={18} color="white" />}
-                    iconPosition="left"
-                  >
-                    View Results
-                  </Button>
-                )}
-              </View>
-            ) : (
-              // Camera capture buttons remain unchanged
               <View className="gap-4">
                 <Button
                   onPress={takePicture}
@@ -526,7 +351,7 @@ export default function CaptureScreen() {
                   icon={<Feather name="camera" size={20} color="white" />}
                   iconPosition="left"
                 >
-                  Capture Image
+                  {i18n.t("capture.captureButton")}
                 </Button>
                 <Button
                   variant="outline"
@@ -540,11 +365,160 @@ export default function CaptureScreen() {
                   }
                   iconPosition="left"
                 >
-                  Select from Gallery
+                  {i18n.t("capture.selectGallery")}
                 </Button>
               </View>
-            )}
-          </View>
+            </View>
+          ) : (
+            <View className="p-6">
+              {/* Body Location */}
+              <View className="mb-4">
+                <Text className="font-medium mb-2 text-slate-800 dark:text-white">
+                  {i18n.t("capture.bodyLocation")}
+                </Text>
+                <TouchableOpacity
+                  className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600"
+                  onPress={() =>
+                    setShowBodyLocationPicker(!showBodyLocationPicker)
+                  }
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-slate-800 dark:text-white">
+                      {bodyLocation.replace("_", " ")}
+                    </Text>
+                    <Feather
+                      name={
+                        showBodyLocationPicker ? "chevron-up" : "chevron-down"
+                      }
+                      size={16}
+                      color={isDarkColorScheme ? "#fff" : "#334155"}
+                    />
+                  </View>
+                </TouchableOpacity>
+                {showBodyLocationPicker && (
+                  <View className="mt-1 p-2 bg-white dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                    {Object.values(BodyLocation).map((location) => (
+                      <TouchableOpacity
+                        key={location}
+                        className={`p-3 rounded-md ${
+                          bodyLocation === location
+                            ? "bg-teal-100 dark:bg-teal-900/30"
+                            : ""
+                        }`}
+                        onPress={() => {
+                          setBodyLocation(location);
+                          setShowBodyLocationPicker(false);
+                        }}
+                      >
+                        <Text className="text-slate-800 dark:text-white">
+                          {location.replace("_", " ")}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              {/* Lesion Size */}
+              <View className="mb-4">
+                <Text className="font-medium mb-2 text-slate-800 dark:text-white">
+                  {i18n.t("capture.lesionSize")}
+                </Text>
+                <TextInput
+                  className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-gray-600 text-slate-800 dark:text-white"
+                  placeholder={i18n.t("capture.enterLesionSize")}
+                  placeholderTextColor={
+                    isDarkColorScheme ? "#94a3b8" : "#64748b"
+                  }
+                  keyboardType="numeric"
+                  value={lesionSize}
+                  onChangeText={setLesionSize}
+                />
+              </View>
+
+              {/* Action Buttons */}
+              <View className="flex-row gap-4">
+                <Button
+                  variant="outline"
+                  onPress={() => {
+                    // Reset states for retake
+                    setCaptured(false);
+                    setImageUri(null);
+                    setUploadSuccess(false);
+                    setAnalyzed(false);
+                    setImageId(null);
+                    setCloudinaryData(null);
+                    setLesionCase(null);
+                  }}
+                  className="flex-1"
+                  icon={
+                    <Feather
+                      name="refresh-cw"
+                      size={18}
+                      color={isDarkColorScheme ? "#fff" : "#334155"}
+                    />
+                  }
+                  iconPosition="left"
+                >
+                  {i18n.t("capture.retake")}
+                </Button>
+
+                {!uploadSuccess ? (
+                  <Button
+                    onPress={uploadImage}
+                    className="flex-1"
+                    icon={
+                      uploading ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Feather name="upload-cloud" size={18} color="white" />
+                      )
+                    }
+                    iconPosition="left"
+                    disabled={uploading}
+                  >
+                    {uploading
+                      ? i18n.t("capture.uploading")
+                      : i18n.t("capture.upload")}
+                  </Button>
+                ) : !analyzed ? (
+                  <Button
+                    onPress={analyzeImage}
+                    className="flex-1"
+                    icon={
+                      analyzing ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Feather name="search" size={18} color="white" />
+                      )
+                    }
+                    iconPosition="left"
+                    disabled={analyzing}
+                  >
+                    {analyzing
+                      ? i18n.t("capture.analyzing")
+                      : i18n.t("capture.analyzeImage")}
+                  </Button>
+                ) : null}
+              </View>
+
+              {analyzed && lesionCase && (
+                <Button
+                  onPress={() => {
+                    router.push({
+                      pathname: "/result-detail",
+                      params: { id: lesionCase.id },
+                    });
+                  }}
+                  className="mt-3"
+                  icon={<Feather name="eye" size={18} color="white" />}
+                  iconPosition="left"
+                >
+                  {i18n.t("capture.viewResults")}
+                </Button>
+              )}
+            </View>
+          )}
         </Card>
       </View>
     </ScrollView>

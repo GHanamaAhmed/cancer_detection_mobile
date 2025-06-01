@@ -1,0 +1,373 @@
+{
+  "auth": {
+    "common": {
+      "back": "Retour",
+      "loading": "Chargement...",
+      "or": "OU"
+    },
+    "welcome": {
+      "title": "Bienvenue",
+      "subtitle": "Connectez-vous à votre compte ou créez-en un nouveau"
+    },
+    "tabs": {
+      "login": "Connexion",
+      "register": "Inscription"
+    },
+    "auth": {
+      "login": {
+        "email": "Email",
+        "emailPlaceholder": "Entrez votre email",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "••••••••",
+        "rememberMe": "Se souvenir de moi",
+        "forgotPassword": "Mot de passe oublié ?",
+        "signIn": "Se connecter",
+        "signingIn": "Connexion en cours...",
+        "noAccount": "Vous n'avez pas de compte ?",
+        "signUp": "S'inscrire"
+      },
+      "register": {
+        "fullName": "Nom complet",
+        "fullNamePlaceholder": "Entrez votre nom complet",
+        "email": "Email",
+        "emailPlaceholder": "Entrez votre email",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "Créez un mot de passe",
+        "termsAgreement": "J'accepte les Conditions d'utilisation et la Politique de confidentialité",
+        "createAccount": "Créer un compte",
+        "creatingAccount": "Création du compte...",
+        "haveAccount": "Vous avez déjà un compte ?",
+        "signIn": "Se connecter",
+        "verifyEmail": "Vérifier l'email",
+        "sending": "Envoi en cours...",
+        "whyCreateAccount": {
+          "title": "Pourquoi créer un compte ?",
+          "tracking": {
+            "title": "Suivi santé personnalisé",
+            "description": "Suivez l'évolution de votre santé au fil du temps"
+          },
+          "security": {
+            "title": "Stockage sécurisé des données",
+            "description": "Vos données de santé sont cryptées et protégées"
+          }
+        },
+        "verification": {
+          "title": "Vérifiez votre email",
+          "subtitle": "Entrez le code de vérification envoyé à {{email}}",
+          "codePlaceholder": "Entrez le code de vérification",
+          "codeLabel": "Code de vérification"
+        }
+      },
+      "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "subtitle": "Entrez votre adresse email et nous vous enverrons un code de vérification",
+        "emailPlaceholder": "Entrez votre email",
+        "sendCode": "Envoyer le code de vérification",
+        "sending": "Envoi en cours...",
+        "backToLogin": "Retour à la connexion",
+        "verification": {
+          "title": "Vérifier le code",
+          "subtitle": "Entrez le code de vérification envoyé à {{email}}",
+          "codePlaceholder": "Entrez le code de vérification",
+          "codeLabel": "Code de vérification",
+          "verify": "Vérifier le code",
+          "verifying": "Vérification en cours..."
+        },
+        "resetPassword": {
+          "title": "Réinitialiser le mot de passe",
+          "subtitle": "Créez un nouveau mot de passe pour votre compte",
+          "newPasswordLabel": "Nouveau mot de passe",
+          "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+          "confirmPasswordLabel": "Confirmer le nouveau mot de passe",
+          "confirmPasswordPlaceholder": "Confirmez le nouveau mot de passe",
+          "resetButton": "Réinitialiser le mot de passe",
+          "resetting": "Réinitialisation en cours..."
+        }
+      }
+    },
+    "alerts": {
+      "error": "Erreur",
+      "success": "Succès",
+      "loginFailed": "Identifiants invalides. Veuillez réessayer.",
+      "loginError": "Une erreur est survenue lors de la connexion",
+      "registerError": "Une erreur est survenue lors de l'inscription",
+      "passwordMismatch": "Les nouveaux mots de passe ne correspondent pas",
+      "verificationFailed": "Le code est incorrect ou expiré.",
+      "verificationError": "Une erreur est survenue lors de la vérification du code",
+      "resetSuccess": "Le mot de passe a été réinitialisé avec succès",
+      "resetFailed": "Impossible de réinitialiser le mot de passe. Veuillez réessayer plus tard.",
+      "resetError": "Une erreur est survenue lors de la réinitialisation du mot de passe",
+      "emailRequired": "Veuillez saisir votre adresse email",
+      "sendVerificationFailed": "Échec de l'envoi du code de vérification"
+    }
+  },
+  "home": {
+    "notifications": {
+      "title": "Notifications",
+      "loading": "Chargement des notifications...",
+      "noneYet": "Aucune notification pour l'instant"
+    },
+    "riskLabels": {
+      "low": "Faible Risque",
+      "medium": "Risque Moyen",
+      "high": "Haut Risque",
+      "critical": "Risque Critique",
+      "unknown": "Inconnu"
+    },
+    "dashboard": {
+      "loading": "Chargement de votre tableau de bord...",
+      "error": {
+        "tryAgain": "Réessayer"
+      },
+      "userSection": {
+        "welcome": "Bienvenue",
+        "subtitle": "Examinons la santé de votre peau aujourd'hui"
+      },
+      "analytics": {
+        "title": "Analyses de la santé de la peau",
+        "totalScans": "Total des scans",
+        "lowRiskLesions": "Lésions à faible risque",
+        "daysSinceCheck": "Jours depuis le dernier contrôle",
+        "activeMonitoring": "Surveillance active",
+        "noAnalytics": "Aucune analyse de santé disponible pour le moment.",
+        "takeFirstScan": "Faites votre premier scan"
+      },
+      "recentResults": {
+        "title": "Résultats récents",
+        "seeAll": "Voir tout",
+        "noResults": "Aucun résultat récent disponible."
+      },
+      "upcomingAppointment": {
+        "title": "Prochain rendez-vous",
+        "noAppointments": "Aucun rendez-vous à venir.",
+        "findDoctor": "Trouver un médecin"
+      },
+      "quickActions": {
+        "newScan": "Nouveau scan",
+        "history": "Historique"
+      }
+    }
+  },
+  "doctors": {
+    "authentication": {
+      "errorTitle": "Erreur d'authentification",
+      "loginAgain": "Veuillez vous reconnecter"
+    },
+    "doctors": {
+      "title": "Trouver un médecin",
+      "subtitle": "Contactez un spécialiste",
+      "searchPlaceholder": "Rechercher des médecins...",
+      "doctorDetails": "Détails du médecin",
+      "availableNow": "Disponible maintenant",
+      "specializations": "Spécialités",
+      "education": "Formation",
+      "reviews": "Avis",
+      "connecting": "Connexion en cours...",
+      "pending": "En attente",
+      "connected": "Connecté",
+      "connect": "Se connecter",
+      "chat": "Discussion"
+    },
+    "connection": {
+      "requestPendingTitle": "Demande en attente",
+      "requestPendingMessage": "Votre demande de connexion est en attente.",
+      "connectionDeclinedTitle": "Connexion refusée",
+      "connectionDeclinedMessage": "Votre demande de connexion a été refusée.",
+      "alreadyConnectedTitle": "Déjà connecté",
+      "alreadyConnectedMessage": "Vous êtes déjà connecté avec ce médecin.",
+      "requestSentTitle": "Demande envoyée",
+      "requestSentMessage": "Votre demande de connexion a été envoyée.",
+      "requestFailed": "Échec de l'envoi de la demande de connexion",
+      "connectionError": "Un problème est survenu lors de la connexion. Veuillez réessayer."
+    },
+    "alerts": {
+      "error": "Erreur",
+      "success": "Succès"
+    }
+  },
+  "capture": {
+    "title": "Capturer l'image",
+    "subtitle": "Placez-vous dans le cadre et prenez une photo claire",
+    "noPermission": "Demande d'autorisation de la caméra en cours...",
+    "noAccess": "Pas d'accès à la caméra",
+    "allowCamera": "Autoriser la caméra",
+    "flash": "Flash",
+    "flashOn": "Allumé",
+    "flashOff": "Éteint",
+    "captureGuidelines": "Directives de capture",
+    "goodLighting": "Bonne éclairage",
+    "goodLightingDesc": "Utilisez la lumière naturelle dans la mesure du possible. Évitez les ombres.",
+    "steadyHand": "Main stable",
+    "steadyHandDesc": "Tenez votre appareil fermement pour éviter les photos floues.",
+    "cleanLens": "Objectif propre",
+    "cleanLensDesc": "Assurez-vous que l'objectif de la caméra est propre.",
+    "selectGallery": "Choisir depuis la galerie",
+    "captureButton": "Capturer l'image",
+    "retake": "Reprendre",
+    "uploading": "Téléchargement en cours...",
+    "upload": "Télécharger",
+    "analyzing": "Analyse en cours...",
+    "analyzeImage": "Analyser l'image",
+    "viewResults": "Voir les résultats",
+    "bodyLocation": "Localisation du corps",
+    "lesionSize": "Taille de la lésion (mm)",
+    "enterLesionSize": "Entrez la taille en millimètres"
+  },
+  "profile": {
+    "loading": "Chargement de votre profil...",
+    "tryAgain": "Réessayer",
+    "defaultUser": "Utilisateur",
+    "age": "Âge",
+    "lastExam": "Dernier examen",
+    "personalInformation": "Informations personnelles",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "phoneNumber": "Numéro de téléphone",
+    "permissions": "Autorisations",
+    "cameraAccess": "Accès à la caméra",
+    "locationAccess": "Accès à la localisation",
+    "notifications": "Notifications",
+    "permissionGranted": "Autorisation accordée",
+    "cameraPermissionDescription": "Autoriser l'application à utiliser votre caméra",
+    "locationPermissionDescription": "Autoriser l'application à utiliser votre localisation",
+    "notificationsDescription": "Recevoir des alertes et des rappels",
+    "healthInformation": "Informations sur la santé",
+    "height": "Taille",
+    "enterHeight": "Entrez la taille en cm",
+    "weight": "Poids",
+    "enterWeight": "Entrez le poids en kg",
+    "allergies": "Allergies",
+    "enterAllergies": "Entrez les allergies",
+    "signOut": "Se déconnecter"
+  },
+  "result": {
+    "detailsTitle": "Détails du cas",
+    "loading": "Chargement des détails du cas...",
+    "tryAgain": "Réessayer",
+    "riskLevel": {
+      "low": "Risque faible",
+      "medium": "Risque moyen",
+      "high": "Risque élevé",
+      "critical": "Risque critique",
+      "unknown": "Inconnu",
+      "label": "Niveau de risque"
+    },
+    "doctorReviewed": "Médecin a examiné",
+    "noImagesAvailable": "Pas d'images disponibles",
+    "unknown": "Inconnu",
+    "unknownStatus": "Inconnu",
+    "tab": {
+      "details": "Détails",
+      "analysis": "Analyse"
+    },
+    "caseOverview": "Vue d'ensemble du cas",
+    "caseNumber": "Numéro du cas :",
+    "date": "Date :",
+    "status": "Statut :",
+    "lesionType": "Type de lésion :",
+    "bodyLocation": "Localisation :",
+    "firstNoticed": "Première observation :",
+    "symptoms": "Symptômes :",
+    "diagnosis": "Diagnostic :",
+    "upcomingAppointment": "Prochain rendez-vous",
+    "deleteCase": "Supprimer le cas et les images",
+    "deleteWarning": "Attention : Cette action est définitive et ne peut pas être annulée.",
+    "deleting": "Suppression du cas et des images...",
+    "findDoctor": "Trouver un médecin",
+    "abcde": {
+      "asymmetry": "Asymétrie",
+      "border": "Bord",
+      "color": "Couleur",
+      "diameter": "Diamètre",
+      "evolution": "Évolution"
+    },
+    "analysisResults": "Résultats de l'analyse",
+    "observations": "Observations",
+    "recommendations": "Recommandations",
+    "doctorNotes": "Notes du médecin",
+    "confidence": "Confiance :",
+    "unknownLocation": "Localisation inconnue"
+  },
+  "history": {
+    "title": "Historique des scans",
+    "loading": "Chargement de votre historique...",
+    "tryAgain": "Réessayer",
+    "fetchError": "Échec du chargement des données de l'historique",
+    "loadError": "Échec du chargement des données de l'historique",
+    "lowRisk": "Faible risque",
+    "mediumRisk": "Risque moyen",
+    "highRisk": "Risque élevé",
+    "criticalRisk": "Risque critique",
+    "unknownRisk": "Inconnu",
+    "doctorReviewed": "Examiné par un médecin",
+    "imageSingular": "image",
+    "imagePlural": "images",
+    "unknownLocation": "Emplacement inconnu",
+    "emptyTitle": "Aucun historique de contrôle cutané pour le moment.",
+    "emptySubtitle": "Effectuez votre premier scan pour commencer.",
+    "scanButton": "Effectuer un scan",
+    "endOfHistory": "Fin de l'historique"
+  },
+  "appointments": {
+    "title": "Rendez-vous",
+    "loadingAppointments": "Chargement des rendez-vous...",
+    "status": {
+      "confirmed": "Confirmé",
+      "pending": "En attente",
+      "completed": "Terminé",
+      "canceled": "Annulé",
+      "rescheduled": "Reporté",
+      "unknown": "Inconnu"
+    },
+    "appointmentTypes": {
+      "inPerson": "En personne",
+      "video": "Vidéo",
+      "followUp": "Suivi"
+    },
+    "buttons": {
+      "details": "Détails",
+      "cancel": "Annuler",
+      "continue": "Continuer",
+      "tryAgain": "Réessayer",
+      "bookAppointment": "Prendre rendez-vous",
+      "bookingInProgress": "Réservation en cours..."
+    },
+    "tabs": {
+      "upcoming": "À venir",
+      "bookNew": "Nouveau",
+      "past": "Passés"
+    },
+    "upcoming": {
+      "emptyTitle": "Aucun rendez-vous à venir",
+      "emptySubtitle": "Prenez rendez-vous avec l'un de vos médecins."
+    },
+    "past": {
+      "emptyTitle": "Aucun rendez-vous passé",
+      "emptySubtitle": "L'historique de vos rendez-vous apparaîtra ici."
+    },
+    "bookingFlow": {
+      "loadingAvailability": "Chargement des disponibilités...",
+      "selectDateTimeTitle": "Sélectionner la date et l'heure",
+      "availableTimes": "Horaires disponibles",
+      "noSlotsMessage": "Aucun créneau disponible pour ce médecin en {{month}}.",
+      "noSlotsSuggestion": "Essayez de sélectionner un autre mois ou médecin.",
+      "loadingDoctors": "Chargement des médecins...",
+      "noConnectedDoctorsTitle": "Aucun médecin connecté",
+      "noConnectedDoctorsMessage": "Vous devez vous connecter avec des médecins avant de prendre rendez-vous.",
+      "findDoctorsButton": "Trouver des médecins",
+      "selectDoctorTitle": "Sélectionner un médecin",
+      "noDoctorsAvailable": "Aucun médecin disponible",
+      "loadingDetails": "Chargement...",
+      "confirmAppointmentTitle": "Confirmer le rendez-vous",
+      "consultationFee": "Frais de consultation",
+      "appointmentTypeTitle": "Type de rendez-vous",
+      "reasonForVisitTitle": "Motif de la visite",
+      "reasonPlaceholder": "Décrivez brièvement vos symptômes ou le motif de la visite"
+    }
+  },
+  "video": {
+    "tryAgain": "Réessayer",
+    "loadingCall": "Chargement de l'appel...",
+    "callNotFound": "Appel non trouvé"
+  }
+}

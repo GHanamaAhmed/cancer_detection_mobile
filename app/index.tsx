@@ -25,7 +25,10 @@ import { Checkbox } from "../components/ui/checkbox";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { AuthResponse } from "~/types/mobile-api";
 import ENV from "~/lib/env";
-import i18n from '~/i18n';
+import i18n from "~/i18n";
+import { ThemeToggle } from "~/components/theme-toggle";
+import { SwitchLanguage } from "~/components/langugesSwitcher";
+
 type ForgotPasswordStep = "email" | "verification" | "newPassword";
 
 export default function WelcomeScreen() {
@@ -329,15 +332,17 @@ export default function WelcomeScreen() {
         return (
           <>
             <CardHeader>
-              <CardTitle className="text-center">Forgot Password</CardTitle>
+              <CardTitle className="text-center">
+                {i18n.t("auth.auth.forgotPassword.title")}
+              </CardTitle>
               <CardDescription className="text-center">
-                Enter your email address and we'll send you a verification code
+                {i18n.t("auth.auth.forgotPassword.subtitle")}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <Input
-                label="Email"
-                placeholder="Enter your email"
+                label={i18n.t("auth.auth.forgotPassword.emailPlaceholder")}
+                placeholder={i18n.t("auth.auth.forgotPassword.emailPlaceholder")}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={forgotPasswordEmail}
@@ -353,10 +358,12 @@ export default function WelcomeScreen() {
                 {isSendVerificationLoading ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator size="small" color="#fff" />
-                    <Text className="text-white ml-2">Sending...</Text>
+                    <Text className="text-white ml-2">
+                      {i18n.t("auth.auth.forgotPassword.sending")}
+                    </Text>
                   </View>
                 ) : (
-                  "Send Verification Code"
+                  i18n.t("auth.auth.forgotPassword.sendCode")
                 )}
               </Button>
               <Button
@@ -364,7 +371,7 @@ export default function WelcomeScreen() {
                 onPress={() => setShowForgotPassword(false)}
                 disabled={isSendVerificationLoading}
               >
-                Back to Login
+                {i18n.t("auth.auth.forgotPassword.backToLogin")}
               </Button>
             </CardFooter>
           </>
@@ -373,15 +380,21 @@ export default function WelcomeScreen() {
         return (
           <>
             <CardHeader>
-              <CardTitle className="text-center">Verify Code</CardTitle>
+              <CardTitle className="text-center">
+                {i18n.t("auth.auth.forgotPassword.verification.title")}
+              </CardTitle>
               <CardDescription className="text-center">
-                Enter the verification code sent to {forgotPasswordEmail}
+                {i18n.t("auth.auth.forgotPassword.verification.subtitle", {
+                  email: forgotPasswordEmail,
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <Input
-                label="Verification Code"
-                placeholder="Enter verification code"
+                label={i18n.t("auth.auth.forgotPassword.verification.codeLabel")}
+                placeholder={i18n.t(
+                  "auth.forgotPassword.verification.codePlaceholder"
+                )}
                 keyboardType="number-pad"
                 value={verificationCode}
                 onChangeText={setVerificationCode}
@@ -396,10 +409,12 @@ export default function WelcomeScreen() {
                 {isVerifyCodeLoading ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator size="small" color="#fff" />
-                    <Text className="text-white ml-2">Verifying...</Text>
+                    <Text className="text-white ml-2">
+                      {i18n.t("auth.auth.forgotPassword.verification.verifying")}
+                    </Text>
                   </View>
                 ) : (
-                  "Verify Code"
+                  i18n.t("auth.auth.forgotPassword.verification.verify")
                 )}
               </Button>
               <Button
@@ -408,7 +423,7 @@ export default function WelcomeScreen() {
                 className="mt-2"
                 disabled={isVerifyCodeLoading}
               >
-                Back
+                {i18n.t("common.back")}
               </Button>
             </CardFooter>
           </>
@@ -417,15 +432,21 @@ export default function WelcomeScreen() {
         return (
           <>
             <CardHeader>
-              <CardTitle className="text-center">Reset Password</CardTitle>
+              <CardTitle className="text-center">
+                {i18n.t("auth.auth.forgotPassword.resetPassword.title")}
+              </CardTitle>
               <CardDescription className="text-center">
-                Create a new password for your account
+                {i18n.t("auth.auth.forgotPassword.resetPassword.subtitle")}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <Input
-                label="New Password"
-                placeholder="Enter new password"
+                label={i18n.t(
+                  "auth.forgotPassword.resetPassword.newPasswordLabel"
+                )}
+                placeholder={i18n.t(
+                  "auth.forgotPassword.resetPassword.newPasswordPlaceholder"
+                )}
                 secureTextEntry={!showPassword}
                 value={newPassword}
                 onChangeText={setNewPassword}
@@ -444,8 +465,12 @@ export default function WelcomeScreen() {
                 }
               />
               <Input
-                label="Confirm New Password"
-                placeholder="Confirm new password"
+                label={i18n.t(
+                  "auth.forgotPassword.resetPassword.confirmPasswordLabel"
+                )}
+                placeholder={i18n.t(
+                  "auth.forgotPassword.resetPassword.confirmPasswordPlaceholder"
+                )}
                 secureTextEntry={!showPassword}
                 value={confirmNewPassword}
                 onChangeText={setConfirmNewPassword}
@@ -462,10 +487,12 @@ export default function WelcomeScreen() {
                 {isResetPasswordLoading ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator size="small" color="#fff" />
-                    <Text className="text-white ml-2">Resetting...</Text>
+                    <Text className="text-white ml-2">
+                      {i18n.t("auth.auth.forgotPassword.resetPassword.resetting")}
+                    </Text>
                   </View>
                 ) : (
-                  "Reset Password"
+                  i18n.t("auth.auth.forgotPassword.resetPassword.resetButton")
                 )}
               </Button>
               <Button
@@ -474,7 +501,7 @@ export default function WelcomeScreen() {
                 className="mt-2"
                 disabled={isResetPasswordLoading}
               >
-                Back
+                {i18n.t("common.back")}
               </Button>
             </CardFooter>
           </>
@@ -485,7 +512,6 @@ export default function WelcomeScreen() {
   if (showForgotPassword) {
     return (
       <ScrollView
-      
         className="flex-1 bg-teal-50 dark:bg-slate-900 p-4"
         contentContainerStyle={{
           flexGrow: 1,
@@ -515,12 +541,15 @@ export default function WelcomeScreen() {
         alignItems: "center",
       }}
     >
-      <View className="py-8 w-full" >
+      <SwitchLanguage />
+      <View className="py-8 w-full">
         <Card className="w-full max-w-md mx-auto">
           <CardHeader className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-700 pb-8">
-            <CardTitle className="text-center">Welcome</CardTitle>
+            <CardTitle className="text-center">
+              {i18n.t("auth.welcome.title")}
+            </CardTitle>
             <CardDescription className="text-center">
-              Sign in to your account or create a new one
+              {i18n.t("auth.welcome.subtitle")}
             </CardDescription>
           </CardHeader>
 
@@ -538,7 +567,7 @@ export default function WelcomeScreen() {
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >
-                Login
+                {i18n.t("auth.tabs.login")}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -554,7 +583,7 @@ export default function WelcomeScreen() {
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >
-                Register
+                {i18n.t("auth.tabs.register")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -563,16 +592,16 @@ export default function WelcomeScreen() {
             <>
               <CardContent className="pt-6">
                 <Input
-                  label="Email"
-                  placeholder="Enter your email"
+                  label={i18n.t("auth.auth.login.email")}
+                  placeholder={i18n.t("auth.auth.login.emailPlaceholder")}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   value={loginEmail}
                   onChangeText={setLoginEmail}
                 />
                 <Input
-                  label="Password"
-                  placeholder="••••••••"
+                  label={i18n.t("auth.auth.login.password")}
+                  placeholder={i18n.t("auth.auth.login.passwordPlaceholder")}
                   secureTextEntry={!showPassword}
                   value={loginPassword}
                   onChangeText={setLoginPassword}
@@ -592,11 +621,11 @@ export default function WelcomeScreen() {
                   <Checkbox
                     checked={rememberMe}
                     onValueChange={setRememberMe}
-                    label="Remember me"
+                    label={i18n.t("auth.auth.login.rememberMe")}
                   />
                   <TouchableOpacity onPress={() => setShowForgotPassword(true)}>
                     <Text className="text-xs text-teal-500">
-                      Forgot password?
+                      {i18n.t("auth.auth.login.forgotPassword")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -615,21 +644,23 @@ export default function WelcomeScreen() {
                   {isLoginLoading ? (
                     <View className="flex-row items-center">
                       <ActivityIndicator size="small" color="#fff" />
-                      <Text className="text-white ml-2">Signing In...</Text>
+                      <Text className="text-white ml-2">
+                        {i18n.t("auth.auth.login.signingIn")}
+                      </Text>
                     </View>
                   ) : (
-                    "Sign In"
+                    i18n.t("auth.auth.login.signIn")
                   )}
                 </Button>
 
                 <View className="items-center mt-2">
                   <Text className="text-center text-sm text-gray-500 dark:text-gray-400">
-                    Don't have an account?{" "}
+                    {i18n.t("auth.auth.login.noAccount")}{" "}
                     <Text
                       className="text-teal-500"
                       onPress={() => setActiveTab("register")}
                     >
-                      Sign up
+                      {i18n.t("auth.auth.login.signUp")}
                     </Text>
                   </Text>
                 </View>
@@ -639,23 +670,23 @@ export default function WelcomeScreen() {
             <>
               <CardContent className="pt-6">
                 <Input
-                  label="Full Name"
-                  placeholder="Enter your full name"
+                  label={i18n.t("auth.auth.register.fullName")}
+                  placeholder={i18n.t("auth.auth.register.fullNamePlaceholder")}
                   value={registerFullName}
                   onChangeText={setRegisterFullName}
                 />
 
                 <Input
-                  label="Email"
-                  placeholder="Enter your email"
+                  label={i18n.t("auth.auth.register.email")}
+                  placeholder={i18n.t("auth.auth.register.emailPlaceholder")}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   value={registerEmail}
                   onChangeText={setRegisterEmail}
                 />
                 <Input
-                  label="Password"
-                  placeholder="Create a password"
+                  label={i18n.t("auth.auth.register.password")}
+                  placeholder={i18n.t("auth.auth.register.passwordPlaceholder")}
                   secureTextEntry={!showPassword}
                   value={registerPassword}
                   onChangeText={setRegisterPassword}
@@ -675,7 +706,7 @@ export default function WelcomeScreen() {
                   <Checkbox
                     checked={agreeToTerms}
                     onValueChange={setAgreeToTerms}
-                    label="I agree to the Terms of Service and Privacy Policy"
+                    label={i18n.t("auth.auth.register.termsAgreement")}
                     labelClassName="flex-shrink"
                   />
                 </View>
@@ -686,44 +717,44 @@ export default function WelcomeScreen() {
                   icon={<Feather name="shield" size={18} color="white" />}
                   iconPosition="right"
                 >
-                  Create Account
+                  {i18n.t("auth.auth.register.createAccount")}
                 </Button>
 
                 <View className="flex-row items-center my-2">
                   <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                   <Text className="mx-4 text-xs text-gray-500 dark:text-gray-400">
-                    OR
+                    {i18n.t("auth.common.or")}
                   </Text>
                   <View className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                 </View>
 
                 {/* <Button
-                  variant="outline"
-                  onPress={handleGoogleAuth}
-                  className="bg-white dark:bg-transparent"
-                  icon={
-                    <Image
-                      source={{
-                        uri: "https://developers.google.com/identity/images/g-logo.png",
-                      }}
-                      style={{ width: 18, height: 18 }}
-                    />
-                  }
-                  iconPosition="left"
-                >
-                  <Text className="text-slate-800 dark:text-white">
-                    Sign up with Google
-                  </Text>
-                </Button> */}
+                variant="outline"
+                onPress={handleGoogleAuth}
+                className="bg-white dark:bg-transparent"
+                icon={
+                  <Image
+                    source={{
+                      uri: "https://developers.google.com/identity/images/g-logo.png",
+                    }}
+                    style={{ width: 18, height: 18 }}
+                  />
+                }
+                iconPosition="left"
+              >
+                <Text className="text-slate-800 dark:text-white">
+                  {i18n.t('auth.register.signUpWithGoogle')}
+                </Text>
+              </Button> */}
 
                 <View className="items-center mt-2">
                   <Text className="text-center text-sm text-gray-500 dark:text-gray-400">
-                    Already have an account?{" "}
+                    {i18n.t("auth.auth.register.haveAccount")}{" "}
                     <Text
                       className="text-teal-500"
                       onPress={() => setActiveTab("login")}
                     >
-                      Sign in
+                      {i18n.t("auth.auth.register.signIn")}
                     </Text>
                   </Text>
                 </View>
@@ -752,16 +783,18 @@ export default function WelcomeScreen() {
                 {isSendRegistrationCodeLoading ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator size="small" color="#fff" />
-                    <Text className="text-white ml-2">Sending...</Text>
+                    <Text className="text-white ml-2">
+                      {i18n.t("auth.auth.register.sending")}
+                    </Text>
                   </View>
                 ) : (
-                  "Verify Email"
+                  i18n.t("auth.auth.register.verifyEmail")
                 )}
               </Button>
 
               <View className="px-6 pb-6 pt-2 border-t border-gray-100 dark:border-gray-700 mt-4">
                 <Text className="text-center font-medium mb-4 text-slate-800 dark:text-white">
-                  Why create an account?
+                  {i18n.t("auth.auth.register.whyCreateAccount.title")}
                 </Text>
                 <View className="gap-3">
                   <View className="flex-row">
@@ -770,10 +803,14 @@ export default function WelcomeScreen() {
                     </View>
                     <View className="flex-1">
                       <Text className="font-medium text-slate-800 dark:text-white">
-                        Personalized Health Tracking
+                        {i18n.t(
+                          "auth.register.whyCreateAccount.tracking.title"
+                        )}
                       </Text>
                       <Text className="text-sm text-gray-500 dark:text-gray-400">
-                        Monitor your health progress over time
+                        {i18n.t(
+                          "auth.register.whyCreateAccount.tracking.description"
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -783,10 +820,14 @@ export default function WelcomeScreen() {
                     </View>
                     <View className="flex-1">
                       <Text className="font-medium text-slate-800 dark:text-white">
-                        Secure Data Storage
+                        {i18n.t(
+                          "auth.auth.register.whyCreateAccount.security.title"
+                        )}
                       </Text>
                       <Text className="text-sm text-gray-500 dark:text-gray-400">
-                        Your health data is encrypted and protected
+                        {i18n.t(
+                          "auth.auth.register.whyCreateAccount.security.description"
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -798,15 +839,21 @@ export default function WelcomeScreen() {
             // Display the verification form
             <>
               <CardHeader>
-                <CardTitle className="text-center">Verify Your Email</CardTitle>
+                <CardTitle className="text-center">
+                  {i18n.t("auth.auth.register.verification.title")}
+                </CardTitle>
                 <CardDescription className="text-center">
-                  Enter the verification code sent to {registrationData.email}
+                  {i18n.t("auth.auth.register.verification.subtitle", {
+                    email: registrationData.email,
+                  })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <Input
-                  label="Verification Code"
-                  placeholder="Enter verification code"
+                  label={i18n.t("auth.auth.register.verification.codeLabel")}
+                  placeholder={i18n.t(
+                    "auth.register.verification.codePlaceholder"
+                  )}
                   keyboardType="number-pad"
                   value={registrationCode}
                   onChangeText={setRegistrationCode}
@@ -827,11 +874,11 @@ export default function WelcomeScreen() {
                     <View className="flex-row items-center">
                       <ActivityIndicator size="small" color="#fff" />
                       <Text className="text-white ml-2">
-                        Creating Account...
+                        {i18n.t("auth.auth.register.creatingAccount")}
                       </Text>
                     </View>
                   ) : (
-                    "Create Account"
+                    i18n.t("auth.auth.register.createAccount")
                   )}
                 </Button>
                 <Button
@@ -839,7 +886,7 @@ export default function WelcomeScreen() {
                   onPress={() => setRegistrationStep("form")}
                   className="mt-2"
                 >
-                  Back
+                  {i18n.t("auth.common.back")}
                 </Button>
               </CardFooter>
             </>

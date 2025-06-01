@@ -19,11 +19,10 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "~/lib/useColorScheme";
 import ENV from "~/lib/env";
-
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import i18n from "~/i18n"; // Ensure this path points to your i18n configuration
 
-// Import the types from your API types file
 import { DoctorSummary, DoctorDetail } from "~/types/mobile-api";
 
 export default function FindDoctorScreen() {
@@ -35,13 +34,17 @@ export default function FindDoctorScreen() {
   const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
         console.error("No token found");
-        Alert.alert("Authentication Error", "Please login again");
+        Alert.alert(
+          i18n.t("doctors.authentication.errorTitle"),
+          i18n.t("doctors.authentication.loginAgain")
+        );
         setRefreshing(false);
         return;
       }
@@ -67,6 +70,7 @@ export default function FindDoctorScreen() {
       setRefreshing(false);
     }
   };
+
   // Fetch doctors list on mount
   useEffect(() => {
     async function fetchDoctors() {
@@ -131,17 +135,21 @@ export default function FindDoctorScreen() {
     }
     fetchDoctorDetail();
   }, [selectedDoctorId]);
+
+  // Check connection status when doctorDetail changes
   useEffect(() => {
     if (!doctorDetail) return;
     const fetchConnectionStatus = async () => {
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
         console.error("No token found");
-        Alert.alert("Authentication Error", "Please login again");
+        Alert.alert(
+          i18n.t("doctors.authentication.errorTitle"),
+          i18n.t("doctors.authentication.loginAgain")
+        );
         setIsConnecting(false);
         return;
       }
-      // First check if connection already exists
       let response = await fetch(
         `${ENV.API_URL}/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
         {
@@ -152,38 +160,31 @@ export default function FindDoctorScreen() {
           },
         }
       );
-
       let data = await response.json();
       console.log("Connection status data:", data.data.status);
-
       if (data.exists) {
         setConnectionStatus(data.data.status);
-        if (data.data.status === "PENDING") {
-          setConnectionStatus("PENDING");
-        } else if (data.data.status === "APPROVED") {
-          setConnectionStatus("APPROVED");
-        } else if (data.data.status === "DECLINED") {
-          setConnectionStatus("DECLINED");
-        }
       }
     };
     fetchConnectionStatus();
   }, [selectedDoctorId]);
+
   const handleConnect = async () => {
     if (!doctorDetail) return;
 
     setIsConnecting(true);
     try {
-      // Get token from secure store
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
         console.error("No token found");
-        Alert.alert("Authentication Error", "Please login again");
+        Alert.alert(
+          i18n.t("doctors.authentication.errorTitle"),
+          i18n.t("doctors.authentication.loginAgain")
+        );
         setIsConnecting(false);
         return;
       }
 
-      // First check if connection already exists
       let response = await fetch(
         `${ENV.API_URL}/api/mobile/connection/create?doctorId=${doctorDetail.id}`,
         {
@@ -194,31 +195,26 @@ export default function FindDoctorScreen() {
           },
         }
       );
-
       let data = await response.json();
-
-      // If connection exists, update status and show appropriate message
       if (data.exists) {
         setConnectionStatus(data.data.status);
-
         if (data.data.status === "PENDING") {
           Alert.alert(
-            "Connection Pending",
-            "Your connection request is waiting for approval"
+            i18n.t("doctors.connection.requestPendingTitle"),
+            i18n.t("doctors.connection.requestPendingMessage")
           );
         } else if (data.data.status === "APPROVED") {
           Alert.alert(
-            "Already Connected",
-            "You are already connected with this doctor"
+            i18n.t("doctors.connection.alreadyConnectedTitle"),
+            i18n.t("doctors.connection.alreadyConnectedMessage")
           );
         } else if (data.data.status === "DECLINED") {
           Alert.alert(
-            "Connection Declined",
-            "Your previous connection request was declined"
+            i18n.t("doctors.connection.connectionDeclinedTitle"),
+            i18n.t("doctors.connection.connectionDeclinedMessage")
           );
         }
       } else {
-        // If no connection exists, create one
         response = await fetch(`${ENV.API_URL}/api/mobile/connection/create`, {
           method: "POST",
           headers: {
@@ -231,33 +227,28 @@ export default function FindDoctorScreen() {
               "I would like to connect with you regarding my skin health.",
           }),
         });
-
         data = await response.json();
-
         if (data.success) {
           setConnectionStatus("PENDING");
           Alert.alert(
-            "Request Sent",
-            "Your connection request has been sent to the doctor"
+            i18n.t("doctors.connection.requestSentTitle"),
+            i18n.t("doctors.connection.requestSentMessage")
           );
         } else {
           Alert.alert(
-            "Error",
-            data.error || "Failed to send connection request"
+            i18n.t("doctors.alerts.error"),
+            data.error || i18n.t("doctors.connection.requestFailed")
           );
         }
       }
     } catch (error) {
       console.error("Error handling connection:", error);
-      Alert.alert(
-        "Connection Error",
-        "There was a problem processing your connection request"
-      );
+      Alert.alert(i18n.t("doctors.alerts.error"), i18n.t("doctors.connection.connectionError"));
     } finally {
       setIsConnecting(false);
     }
   };
-  // Within your existing FindDoctorScreen component, update the helper functions:
+
   const handleChat = () => {
     router.push({
       pathname: `/(tabs)/chat/[doctorId]`,
@@ -267,8 +258,6 @@ export default function FindDoctorScreen() {
       },
     });
   };
-
-  
 
   return (
     <SafeAreaView
@@ -294,10 +283,10 @@ export default function FindDoctorScreen() {
             </TouchableOpacity>
             <View>
               <Text className="text-2xl font-bold text-slate-800 dark:text-white">
-                Find Doctor
+                {i18n.t("doctors.doctors.title")}
               </Text>
               <Text className="text-gray-500 dark:text-gray-400">
-                Connect with a specialist
+                {i18n.t("doctors.doctors.subtitle")}
               </Text>
             </View>
           </View>
@@ -306,7 +295,7 @@ export default function FindDoctorScreen() {
           <View className="px-6 pb-2">
             <View className="relative mb-6">
               <Input
-                placeholder="Search doctors..."
+                placeholder={i18n.t("doctors.doctors.searchPlaceholder")}
                 leftIcon={
                   <Feather
                     name="search"
@@ -359,7 +348,8 @@ export default function FindDoctorScreen() {
                       <View className="flex-row items-center mt-1">
                         <Feather name="star" size={12} color="#f59e0b" />
                         <Text className="text-xs ml-1 text-gray-500 dark:text-gray-400">
-                          {doctor.rating} ({doctor.reviews} reviews)
+                          {doctor.rating} ({doctor.reviews}{" "}
+                          {i18n.t("doctors.doctors.reviews")})
                         </Text>
                       </View>
                     </View>
@@ -373,42 +363,17 @@ export default function FindDoctorScreen() {
               <View className="mb-6 flex flex-col gap-4">
                 <View className="flex-row items-center justify-between mb-4">
                   <Text className="font-medium text-slate-800 dark:text-white">
-                    Doctor Details
+                    {i18n.t("doctors.doctors.doctorDetails")}
                   </Text>
-                  <Badge variant="success">Available Now</Badge>
+                  <Badge variant="success">
+                    {i18n.t("doctors.doctors.availableNow")}
+                  </Badge>
                 </View>
 
                 <View className="gap-4">
-                  {/* <View className="flex-row gap-3">
-                    <View className="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 items-center">
-                      <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        Experience
-                      </Text>
-                      <Text className="font-medium text-slate-800 dark:text-white">
-                        {doctorDetail.experience}+ Years
-                      </Text>
-                    </View>
-                    <View className="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 items-center">
-                      <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        Patients
-                      </Text>
-                      <Text className="font-medium text-slate-800 dark:text-white">
-                        {doctorDetail.patients}
-                      </Text>
-                    </View>
-                    <View className="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 items-center">
-                      <Text className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        Rating
-                      </Text>
-                      <Text className="font-medium text-slate-800 dark:text-white">
-                        {doctorDetail.rating}/5
-                      </Text>
-                    </View>
-                  </View> */}
-
                   <View className="bg-white dark:bg-slate-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
                     <Text className="font-medium mb-2 text-slate-800 dark:text-white">
-                      Specializations
+                      {i18n.t("doctors.doctors.specializations")}
                     </Text>
                     <View className="flex-row flex-wrap gap-2">
                       {doctorDetail.specializations.map((spec, index) => (
@@ -425,7 +390,7 @@ export default function FindDoctorScreen() {
 
                   <View className="bg-white dark:bg-slate-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
                     <Text className="font-medium mb-2 text-slate-800 dark:text-white">
-                      Education & Training
+                      {i18n.t("doctors.doctors.education")}
                     </Text>
                     <View className="gap-2">
                       {doctorDetail.education.map((edu, index) => (
@@ -443,7 +408,7 @@ export default function FindDoctorScreen() {
 
                   <View className="bg-white dark:bg-slate-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
                     <Text className="font-medium mb-2 text-slate-800 dark:text-white">
-                      Patient Reviews
+                      {i18n.t("doctors.doctors.reviews")}
                     </Text>
                     <View className="gap-3">
                       {doctorDetail.reviews.map((rev) => (
@@ -489,12 +454,12 @@ export default function FindDoctorScreen() {
                     }
                   >
                     {isConnecting
-                      ? "Connecting..."
+                      ? i18n.t("doctors.doctors.connecting")
                       : connectionStatus === "PENDING"
-                      ? "Pending"
+                      ? i18n.t("doctors.doctors.pending")
                       : connectionStatus === "APPROVED"
-                      ? "Connected"
-                      : "Connect"}
+                      ? i18n.t("doctors.doctors.connected")
+                      : i18n.t("doctors.doctors.connect")}
                   </Button>
                   <Button
                     variant="outline"
@@ -509,7 +474,7 @@ export default function FindDoctorScreen() {
                     }
                     iconPosition="left"
                   >
-                    Chat
+                    {i18n.t("doctors.doctors.chat")}
                   </Button>
                 </View>
               </View>

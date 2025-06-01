@@ -16,6 +16,7 @@ import {
 import { Feather, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Card } from "~/components/ui/card";
 import ENV from "~/lib/env";
+import i18n from "~/i18n"; // Assuming you have i18n initialized
 
 import { Button } from "~/components/ui/button";
 import { Avatar } from "~/components/ui/avatar";
@@ -473,7 +474,6 @@ export default function AppointmentsScreen() {
     setAppointmentType(type);
   };
 
-  // Render appointment card
   const renderAppointmentCard = (appointment: Appointment) => {
     const isPast =
       new Date(appointment.date) < new Date() ||
@@ -486,37 +486,37 @@ export default function AppointmentsScreen() {
           return {
             bg: isDarkColorScheme ? "bg-green-900/30" : "bg-green-100",
             text: isDarkColorScheme ? "text-green-400" : "text-green-700",
-            label: "Confirmed",
+            label: i18n.t("appointments.status.confirmed"),
           };
         case "REQUESTED":
           return {
             bg: isDarkColorScheme ? "bg-yellow-900/30" : "bg-yellow-100",
             text: isDarkColorScheme ? "text-yellow-400" : "text-yellow-700",
-            label: "Pending",
+            label: i18n.t("appointments.status.pending"),
           };
         case "COMPLETED":
           return {
             bg: isDarkColorScheme ? "bg-blue-900/30" : "bg-blue-100",
             text: isDarkColorScheme ? "text-blue-400" : "text-blue-700",
-            label: "Completed",
+            label: i18n.t("appointments.status.completed"),
           };
         case "CANCELED":
           return {
             bg: isDarkColorScheme ? "bg-red-900/30" : "bg-red-100",
             text: isDarkColorScheme ? "text-red-400" : "text-red-700",
-            label: "Canceled",
+            label: i18n.t("appointments.status.canceled"),
           };
         case "RESCHEDULED":
           return {
             bg: isDarkColorScheme ? "bg-purple-900/30" : "bg-purple-100",
             text: isDarkColorScheme ? "text-purple-400" : "text-purple-700",
-            label: "Rescheduled",
+            label: i18n.t("appointments.status.rescheduled"),
           };
         default:
           return {
             bg: isDarkColorScheme ? "bg-gray-800" : "bg-gray-100",
             text: isDarkColorScheme ? "text-gray-400" : "text-gray-700",
-            label: status.replace("_", " "),
+            label: status.replace("_", " "), // Or a generic i18n.t("appointments.status.unknown")
           };
       }
     };
@@ -627,7 +627,7 @@ export default function AppointmentsScreen() {
                   }
                   className="flex-1 mr-2"
                 >
-                  Details
+                  {i18n.t("appointments.buttons.details")}
                 </Button>
                 <Button
                   variant="outline"
@@ -635,7 +635,7 @@ export default function AppointmentsScreen() {
                   className="flex-1 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
                   textClassName="text-red-500 dark:text-red-400"
                 >
-                  Cancel
+                  {i18n.t("appointments.buttons.cancel")}
                 </Button>
               </View>
             )}
@@ -654,7 +654,7 @@ export default function AppointmentsScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading availability...
+            {i18n.t("appointments.bookingFlow.loadingAvailability")}
           </Text>
         </View>
       );
@@ -671,7 +671,7 @@ export default function AppointmentsScreen() {
             />
           </TouchableOpacity>
           <Text className="text-lg font-bold text-slate-800 dark:text-white flex-1">
-            Select Date & Time
+            {i18n.t("appointments.bookingFlow.selectDateTimeTitle")}
           </Text>
 
           {/* Month selection */}
@@ -799,7 +799,7 @@ export default function AppointmentsScreen() {
             {selectedDate && (
               <View>
                 <Text className="font-medium text-slate-800 dark:text-white mb-2">
-                  Available Times
+                  {i18n.t("appointments.bookingFlow.availableTimes")}
                 </Text>
 
                 <View className="flex-row flex-wrap">
@@ -838,10 +838,12 @@ export default function AppointmentsScreen() {
               color={isDarkColorScheme ? "#64748b" : "#94a3b8"}
             />
             <Text className="mt-4 text-center text-slate-600 dark:text-slate-400">
-              No available slots for this doctor in {selectedMonth}.
+              {i18n.t("appointments.bookingFlow.noSlotsMessage", {
+                month: selectedMonth,
+              })}
             </Text>
             <Text className="mt-2 text-center text-slate-500 dark:text-slate-500">
-              Try selecting a different month or doctor.
+              {i18n.t("appointments.bookingFlow.noSlotsSuggestion")}
             </Text>
           </View>
         )}
@@ -849,7 +851,7 @@ export default function AppointmentsScreen() {
         {/* Continue button */}
         {selectedDate && selectedSlot && (
           <Button onPress={() => setStep(3)} className="mt-6">
-            Continue
+            {i18n.t("appointments.buttons.continue")}
           </Button>
         )}
       </View>
@@ -865,7 +867,7 @@ export default function AppointmentsScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading doctors...
+            {i18n.t("appointments.bookingFlow.loadingDoctors")}
           </Text>
         </View>
       );
@@ -883,7 +885,7 @@ export default function AppointmentsScreen() {
             {error}
           </Text>
           <Button onPress={() => fetchConnectedDoctors()} className="mt-4">
-            Try Again
+            {i18n.t("appointments.buttons.tryAgain")}
           </Button>
         </View>
       );
@@ -898,13 +900,13 @@ export default function AppointmentsScreen() {
             color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
           />
           <Text className="mt-4 text-center text-slate-800 dark:text-white font-medium">
-            No Connected Doctors
+            {i18n.t("appointments.bookingFlow.noConnectedDoctorsTitle")}
           </Text>
           <Text className="mt-2 text-center text-slate-600 dark:text-slate-400">
-            You need to connect with doctors before booking appointments.
+            {i18n.t("appointments.bookingFlow.noConnectedDoctorsMessage")}
           </Text>
           <Button onPress={() => router.push("/doctors")} className="mt-4">
-            Find Doctors
+            {i18n.t("appointments.bookingFlow.findDoctorsButton")}
           </Button>
         </View>
       );
@@ -913,7 +915,7 @@ export default function AppointmentsScreen() {
     return (
       <View className="p-4">
         <Text className="text-lg font-bold text-slate-800 dark:text-white mb-4">
-          Select Doctor
+          {i18n.t("appointments.bookingFlow.selectDoctorTitle")}
         </Text>
 
         <FlatList
@@ -973,7 +975,7 @@ export default function AppointmentsScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center py-8">
               <Text className="text-center text-slate-600 dark:text-slate-400">
-                No doctors available
+                {i18n.t("appointments.bookingFlow.noDoctorsAvailable")}
               </Text>
             </View>
           }
@@ -991,7 +993,7 @@ export default function AppointmentsScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading...
+            {i18n.t("appointments.bookingFlow.loadingDetails")}
           </Text>
         </View>
       );
@@ -1008,7 +1010,7 @@ export default function AppointmentsScreen() {
             />
           </TouchableOpacity>
           <Text className="text-lg font-bold text-slate-800 dark:text-white flex-1">
-            Confirm Appointment
+            {i18n.t("appointments.bookingFlow.confirmAppointmentTitle")}
           </Text>
         </View>
 
@@ -1040,6 +1042,7 @@ export default function AppointmentsScreen() {
                 <View>
                   <Text className="text-sm font-medium text-slate-800 dark:text-white">
                     {new Date(selectedSlot).toLocaleDateString("en-US", {
+                      // Consider localizing date formats too
                       weekday: "long",
                       month: "short",
                       day: "numeric",
@@ -1047,6 +1050,7 @@ export default function AppointmentsScreen() {
                   </Text>
                   <Text className="text-xs text-gray-500 dark:text-gray-400">
                     {new Date(selectedSlot).toLocaleTimeString("en-US", {
+                      // Consider localizing time formats too
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
@@ -1068,7 +1072,7 @@ export default function AppointmentsScreen() {
               {selectedDoctor.consultationFee && (
                 <View className="flex-row items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                   <Text className="text-sm text-gray-500 dark:text-gray-400">
-                    Consultation Fee
+                    {i18n.t("appointments.bookingFlow.consultationFee")}
                   </Text>
                   <Text className="font-medium text-slate-800 dark:text-white">
                     ${selectedDoctor.consultationFee}
@@ -1081,7 +1085,7 @@ export default function AppointmentsScreen() {
 
         {/* Appointment Type */}
         <Text className="font-medium text-slate-800 dark:text-white mb-2">
-          Appointment Type
+          {i18n.t("appointments.bookingFlow.appointmentTypeTitle")}
         </Text>
         <View className="flex-row mb-4">
           <TouchableOpacity
@@ -1113,7 +1117,7 @@ export default function AppointmentsScreen() {
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
-                In Person
+                {i18n.t("appointments.appointmentTypes.inPerson")}
               </Text>
             </View>
           </TouchableOpacity>
@@ -1147,7 +1151,7 @@ export default function AppointmentsScreen() {
                     : "text-slate-600 dark:text-slate-400"
                 }`}
               >
-                Video
+                {i18n.t("appointments.appointmentTypes.video")}
               </Text>
             </View>
           </TouchableOpacity>
@@ -1155,12 +1159,12 @@ export default function AppointmentsScreen() {
 
         {/* Reason for Visit */}
         <Text className="font-medium text-slate-800 dark:text-white mb-2">
-          Reason for Visit
+          {i18n.t("appointments.bookingFlow.reasonForVisitTitle")}
         </Text>
         <TextInput
           value={reasonForVisit}
           onChangeText={setReasonForVisit}
-          placeholder="Briefly describe your symptoms or reason for the visit"
+          placeholder={i18n.t("appointments.bookingFlow.reasonPlaceholder")}
           multiline
           numberOfLines={4}
           className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-slate-800 dark:text-white mb-6"
@@ -1177,10 +1181,12 @@ export default function AppointmentsScreen() {
           {bookingInProgress ? (
             <View className="flex-row items-center">
               <ActivityIndicator size="small" color="#fff" />
-              <Text className="text-white ml-2">Booking...</Text>
+              <Text className="text-white ml-2">
+                {i18n.t("appointments.buttons.bookingInProgress")}
+              </Text>
             </View>
           ) : (
-            "Book Appointment"
+            i18n.t("appointments.buttons.bookAppointment")
           )}
         </Button>
       </View>
@@ -1192,15 +1198,15 @@ export default function AppointmentsScreen() {
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-900">
       <View className="flex-row items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
         <Text className="text-xl font-bold text-slate-800 dark:text-white">
-          Appointments
+          {i18n.t("appointments.title")}
         </Text>
       </View>
 
       <Tabs
         tabs={[
-          { id: "upcoming", label: "Upcoming" },
-          { id: "book", label: "Book New" },
-          { id: "past", label: "Past" },
+          { id: "upcoming", label: i18n.t("appointments.tabs.upcoming") },
+          { id: "book", label: i18n.t("appointments.tabs.bookNew") },
+          { id: "past", label: i18n.t("appointments.tabs.past") },
         ]}
         activeTab={activeTab}
         onTabChange={(tab) => {
@@ -1222,7 +1228,7 @@ export default function AppointmentsScreen() {
                 color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
               />
               <Text className="mt-4 text-slate-600 dark:text-slate-400">
-                Loading appointments...
+                {i18n.t("appointments.loadingAppointments")}
               </Text>
             </View>
           ) : error ? (
@@ -1236,7 +1242,7 @@ export default function AppointmentsScreen() {
                 {error}
               </Text>
               <Button onPress={() => fetchAppointments()} className="mt-4">
-                Try Again
+                {i18n.t("appointments.buttons.tryAgain")}
               </Button>
             </View>
           ) : upcomingAppointments.length === 0 ? (
@@ -1247,10 +1253,10 @@ export default function AppointmentsScreen() {
                 color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
               />
               <Text className="mt-4 text-center text-slate-800 dark:text-white font-medium">
-                No Upcoming Appointments
+                {i18n.t("appointments.upcoming.emptyTitle")}
               </Text>
               <Text className="mt-2 text-center text-slate-600 dark:text-slate-400">
-                Book an appointment with one of your doctors.
+                {i18n.t("appointments.upcoming.emptySubtitle")}
               </Text>
               <Button
                 onPress={() => {
@@ -1259,7 +1265,7 @@ export default function AppointmentsScreen() {
                 }}
                 className="mt-4"
               >
-                Book Appointment
+                {i18n.t("appointments.buttons.bookAppointment")}
               </Button>
             </View>
           ) : (
@@ -1311,7 +1317,7 @@ export default function AppointmentsScreen() {
                 color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
               />
               <Text className="mt-4 text-slate-600 dark:text-slate-400">
-                Loading appointments...
+                {i18n.t("appointments.loadingAppointments")}
               </Text>
             </View>
           ) : error ? (
@@ -1325,7 +1331,7 @@ export default function AppointmentsScreen() {
                 {error}
               </Text>
               <Button onPress={() => fetchAppointments()} className="mt-4">
-                Try Again
+                {i18n.t("appointments.buttons.tryAgain")}
               </Button>
             </View>
           ) : pastAppointments.length === 0 ? (
@@ -1336,10 +1342,10 @@ export default function AppointmentsScreen() {
                 color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
               />
               <Text className="mt-4 text-center text-slate-800 dark:text-white font-medium">
-                No Past Appointments
+                {i18n.t("appointments.past.emptyTitle")}
               </Text>
               <Text className="mt-2 text-center text-slate-600 dark:text-slate-400">
-                Your appointment history will appear here.
+                {i18n.t("appointments.past.emptySubtitle")}
               </Text>
             </View>
           ) : (
@@ -1357,4 +1363,5 @@ export default function AppointmentsScreen() {
       )}
     </SafeAreaView>
   );
+  // ...existing code...
 }

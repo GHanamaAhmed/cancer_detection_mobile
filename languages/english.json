@@ -1,102 +1,374 @@
 {
-  "common": {
-    "back": "Back",
-    "loading": "Loading...",
-    "or": "OR"
-  },
-  "welcome": {
-    "title": "Welcome",
-    "subtitle": "Sign in to your account or create a new one"
-  },
-  "tabs": {
-    "login": "Login",
-    "register": "Register"
-  },
   "auth": {
-    "login": {
-      "email": "Email",
-      "emailPlaceholder": "Enter your email",
-      "password": "Password",
-      "passwordPlaceholder": "••••••••",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "signIn": "Sign In",
-      "signingIn": "Signing In...",
-      "noAccount": "Don't have an account?",
-      "signUp": "Sign up"
+    "common": {
+      "back": "Back",
+      "loading": "Loading...",
+      "or": "OR"
     },
-    "register": {
-      "fullName": "Full Name",
-      "fullNamePlaceholder": "Enter your full name",
-      "email": "Email",
-      "emailPlaceholder": "Enter your email",
-      "password": "Password",
-      "passwordPlaceholder": "Create a password",
-      "termsAgreement": "I agree to the Terms of Service and Privacy Policy",
-      "createAccount": "Create Account",
-      "creatingAccount": "Creating Account...",
-      "haveAccount": "Already have an account?",
-      "signIn": "Sign in",
-      "verifyEmail": "Verify Email",
-      "sending": "Sending...",
-      "whyCreateAccount": {
-        "title": "Why create an account?",
-        "tracking": {
-          "title": "Personalized Health Tracking",
-          "description": "Monitor your health progress over time"
+    "welcome": {
+      "title": "Welcome",
+      "subtitle": "Sign in to your account or create a new one"
+    },
+    "tabs": {
+      "login": "Login",
+      "register": "Register"
+    },
+    "auth": {
+      "login": {
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "signIn": "Sign In",
+        "signingIn": "Signing In...",
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up"
+      },
+      "register": {
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "Enter your full name",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email",
+        "password": "Password",
+        "passwordPlaceholder": "Create a password",
+        "termsAgreement": "I agree to the Terms of Service and Privacy Policy",
+        "createAccount": "Create Account",
+        "creatingAccount": "Creating Account...",
+        "haveAccount": "Already have an account?",
+        "signIn": "Sign in",
+        "verifyEmail": "Verify Email",
+        "sending": "Sending...",
+        "whyCreateAccount": {
+          "title": "Why create an account?",
+          "tracking": {
+            "title": "Personalized Health Tracking",
+            "description": "Monitor your health progress over time"
+          },
+          "security": {
+            "title": "Secure Data Storage",
+            "description": "Your health data is encrypted and protected"
+          }
         },
-        "security": {
-          "title": "Secure Data Storage",
-          "description": "Your health data is encrypted and protected"
+        "verification": {
+          "title": "Verify Your Email",
+          "subtitle": "Enter the verification code sent to {{email}}",
+          "codePlaceholder": "Enter verification code",
+          "codeLabel": "Verification Code"
         }
       },
-      "verification": {
-        "title": "Verify Your Email",
-        "subtitle": "Enter the verification code sent to {{email}}",
-        "codePlaceholder": "Enter verification code",
-        "codeLabel": "Verification Code"
+      "forgotPassword": {
+        "title": "Forgot Password",
+        "subtitle": "Enter your email address and we'll send you a verification code",
+        "emailPlaceholder": "Enter your email",
+        "sendCode": "Send Verification Code",
+        "sending": "Sending...",
+        "backToLogin": "Back to Login",
+        "verification": {
+          "title": "Verify Code",
+          "subtitle": "Enter the verification code sent to {{email}}",
+          "codePlaceholder": "Enter verification code",
+          "codeLabel": "Verification Code",
+          "verify": "Verify Code",
+          "verifying": "Verifying..."
+        },
+        "resetPassword": {
+          "title": "Reset Password",
+          "subtitle": "Create a new password for your account",
+          "newPasswordLabel": "New Password",
+          "newPasswordPlaceholder": "Enter new password",
+          "confirmPasswordLabel": "Confirm New Password",
+          "confirmPasswordPlaceholder": "Confirm new password",
+          "resetButton": "Reset Password",
+          "resetting": "Resetting..."
+        }
       }
     },
-    "forgotPassword": {
-      "title": "Forgot Password",
-      "subtitle": "Enter your email address and we'll send you a verification code",
-      "emailPlaceholder": "Enter your email",
-      "sendCode": "Send Verification Code",
-      "sending": "Sending...",
-      "backToLogin": "Back to Login",
-      "verification": {
-        "title": "Verify Code",
-        "subtitle": "Enter the verification code sent to {{email}}",
-        "codePlaceholder": "Enter verification code",
-        "codeLabel": "Verification Code",
-        "verify": "Verify Code",
-        "verifying": "Verifying..."
+    "alerts": {
+      "error": "Error",
+      "success": "Success",
+      "loginFailed": "Invalid credentials. Please try again.",
+      "loginError": "An error occurred during login",
+      "registerError": "An error occurred during registration",
+      "passwordMismatch": "New passwords do not match",
+      "verificationFailed": "The code is incorrect or expired.",
+      "verificationError": "An error occurred during code verification",
+      "resetSuccess": "Password has been reset successfully",
+      "resetFailed": "Unable to reset password. Try again later.",
+      "resetError": "An error occurred during password reset",
+      "emailRequired": "Please enter your email address",
+      "sendVerificationFailed": "Failed to send verification code"
+    }
+  },
+  "home": {
+    "notifications": {
+      "title": "Notifications",
+      "loading": "Loading notifications...",
+      "noneYet": "No notifications yet"
+    },
+    "riskLabels": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk",
+      "critical": "Critical Risk",
+      "unknown": "Unknown"
+    },
+    "dashboard": {
+      "loading": "Loading your dashboard...",
+      "error": {
+        "tryAgain": "Try Again"
       },
-      "resetPassword": {
-        "title": "Reset Password",
-        "subtitle": "Create a new password for your account",
-        "newPasswordLabel": "New Password",
-        "newPasswordPlaceholder": "Enter new password",
-        "confirmPasswordLabel": "Confirm New Password",
-        "confirmPasswordPlaceholder": "Confirm new password",
-        "resetButton": "Reset Password",
-        "resetting": "Resetting..."
+      "userSection": {
+        "welcome": "Welcome",
+        "subtitle": "Let's check your skin health today"
+      },
+      "analytics": {
+        "title": "Skin Health Analytics",
+        "totalScans": "Total Scans",
+        "lowRiskLesions": "Low Risk Lesions",
+        "daysSinceCheck": "Days Since Last Check",
+        "activeMonitoring": "Active Monitoring",
+        "noAnalytics": "No health analytics available yet.",
+        "takeFirstScan": "Take your first scan"
+      },
+      "recentResults": {
+        "title": "Recent Results",
+        "seeAll": "See All",
+        "noResults": "No recent results available."
+      },
+      "upcomingAppointment": {
+        "title": "Upcoming Appointment",
+        "noAppointments": "No upcoming appointments.",
+        "findDoctor": "Find a Doctor"
+      },
+      "quickActions": {
+        "newScan": "New Scan",
+        "history": "History"
       }
     }
   },
-  "alerts": {
-    "error": "Error",
-    "success": "Success",
-    "loginFailed": "Invalid credentials. Please try again.",
-    "loginError": "An error occurred during login",
-    "registerError": "An error occurred during registration",
-    "passwordMismatch": "New passwords do not match",
-    "verificationFailed": "The code is incorrect or expired.",
-    "verificationError": "An error occurred during code verification",
-    "resetSuccess": "Password has been reset successfully",
-    "resetFailed": "Unable to reset password. Try again later.",
-    "resetError": "An error occurred during password reset",
-    "emailRequired": "Please enter your email address",
-    "sendVerificationFailed": "Failed to send verification code"
+  "doctors": {
+    "authentication": {
+      "errorTitle": "Authentication Error",
+      "loginAgain": "Please log in again"
+    },
+    "doctors": {
+      "title": "Find Doctor",
+      "subtitle": "Connect with a specialist",
+      "searchPlaceholder": "Search doctors...",
+      "doctorDetails": "Doctor Details",
+      "availableNow": "Available Now",
+      "specializations": "Specializations",
+      "education": "Education",
+      "reviews": "Reviews",
+      "connecting": "Connecting...",
+      "pending": "Pending",
+      "connected": "Connected",
+      "connect": "Connect",
+      "chat": "Chat"
+    },
+    "connection": {
+      "requestPendingTitle": "Request Pending",
+      "requestPendingMessage": "Your connection request is pending.",
+      "connectionDeclinedTitle": "Connection Declined",
+      "connectionDeclinedMessage": "Your connection request was declined.",
+      "alreadyConnectedTitle": "Already Connected",
+      "alreadyConnectedMessage": "You are already connected with this doctor.",
+      "requestSentTitle": "Request Sent",
+      "requestSentMessage": "Your connection request has been sent.",
+      "requestFailed": "Failed to send connection request",
+      "connectionError": "There was a problem connecting. Please try again."
+    },
+    "alerts": {
+      "error": "Error",
+      "success": "Success"
+    }
+  },
+
+  "capture": {
+    "title": "Capture Image",
+    "subtitle": "Position within the frame and take a clear photo",
+    "noPermission": "Requesting camera permission...",
+    "noAccess": "No access to camera",
+    "allowCamera": "Allow Camera",
+    "flash": "Flash",
+    "flashOn": "On",
+    "flashOff": "Off",
+    "captureGuidelines": "Capture Guidelines",
+    "goodLighting": "Good Lighting",
+    "goodLightingDesc": "Use natural light when possible. Avoid shadows.",
+    "steadyHand": "Steady Hand",
+    "steadyHandDesc": "Hold your device steady to avoid blurry images.",
+    "cleanLens": "Clean Lens",
+    "cleanLensDesc": "Make sure your camera lens is clean and clear.",
+    "selectGallery": "Select from Gallery",
+    "captureButton": "Capture Image",
+    "retake": "Retake",
+    "uploading": "Uploading...",
+    "upload": "Upload",
+    "analyzing": "Analyzing...",
+    "analyzeImage": "Analyze Image",
+    "viewResults": "View Results",
+    "bodyLocation": "Body Location",
+    "lesionSize": "Lesion Size (mm)",
+    "enterLesionSize": "Enter size in millimeters"
+  },
+  "profile": {
+    "loading": "Loading your profile...",
+    "tryAgain": "Try Again",
+    "defaultUser": "User",
+    "age": "Age",
+    "lastExam": "Last exam",
+    "personalInformation": "Personal Information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "permissions": "Permissions",
+    "cameraAccess": "Camera Access",
+    "locationAccess": "Location Access",
+    "notifications": "Notifications",
+    "permissionGranted": "Permission granted",
+    "cameraPermissionDescription": "Allow app to use your camera",
+    "locationPermissionDescription": "Allow app to use your location",
+    "notificationsDescription": "Receive alerts and reminders",
+    "healthInformation": "Health Information",
+    "height": "Height",
+    "enterHeight": "Enter height in cm",
+    "weight": "Weight",
+    "enterWeight": "Enter weight in kg",
+    "allergies": "Allergies",
+    "enterAllergies": "Enter allergies",
+    "signOut": "Sign Out"
+  },
+  "result": {
+    "detailsTitle": "Case Details",
+    "loading": "Loading case details...",
+    "tryAgain": "Try Again",
+    "riskLevel": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk",
+      "critical": "Critical Risk",
+      "unknown": "Unknown",
+      "label": "Risk Level"
+    },
+    "doctorReviewed": "Doctor Reviewed",
+    "noImagesAvailable": "No images available",
+    "unknown": "Unknown",
+    "unknownStatus": "Unknown",
+    "tab": {
+      "details": "Details",
+      "analysis": "Analysis"
+    },
+    "caseOverview": "Case Overview",
+    "caseNumber": "Case Number:",
+    "date": "Date:",
+    "status": "Status:",
+    "lesionType": "Lesion Type:",
+    "bodyLocation": "Body Location:",
+    "firstNoticed": "First Noticed:",
+    "symptoms": "Symptoms:",
+    "diagnosis": "Diagnosis:",
+    "upcomingAppointment": "Upcoming Appointment",
+    "deleteCase": "Delete Case and Images",
+    "deleteWarning": "Warning: This action is permanent and cannot be undone.",
+    "deleting": "Deleting case and images...",
+    "findDoctor": "Find a Doctor",
+    "abcde": {
+      "asymmetry": "Asymmetry",
+      "border": "Border",
+      "color": "Color",
+      "diameter": "Diameter",
+      "evolution": "Evolution"
+    },
+    "analysisResults": "Analysis Results",
+    "observations": "Observations",
+    "recommendations": "Recommendations",
+    "doctorNotes": "Doctor's Notes",
+    "confidence": "Confidence:",
+    "unknownLocation": "Unknown location"
+  },
+  "history": {
+    "title": "Scan History",
+    "loading": "Loading your history...",
+    "tryAgain": "Try Again",
+    "fetchError": "Failed to fetch history data",
+    "loadError": "Failed to load history data",
+    "lowRisk": "Low Risk",
+    "mediumRisk": "Medium Risk",
+    "highRisk": "High Risk",
+    "criticalRisk": "Critical Risk",
+    "unknownRisk": "Unknown",
+    "doctorReviewed": "Doctor Reviewed",
+    "imageSingular": "image",
+    "imagePlural": "images",
+    "unknownLocation": "Unknown location",
+    "emptyTitle": "No skin check history yet.",
+    "emptySubtitle": "Take your first scan to get started.",
+    "scanButton": "Take a Scan",
+    "endOfHistory": "End of history"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "loadingAppointments": "Loading appointments...",
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "completed": "Completed",
+      "canceled": "Canceled",
+      "rescheduled": "Rescheduled",
+      "unknown": "Unknown"
+    },
+    "appointmentTypes": {
+      "inPerson": "In Person",
+      "video": "Video",
+      "followUp": "Follow Up"
+    },
+    "buttons": {
+      "details": "Details",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "tryAgain": "Try Again",
+      "bookAppointment": "Book Appointment",
+      "bookingInProgress": "Booking..."
+    },
+    "tabs": {
+      "upcoming": "Upcoming",
+      "bookNew": "Book New",
+      "past": "Past"
+    },
+    "upcoming": {
+      "emptyTitle": "No Upcoming Appointments",
+      "emptySubtitle": "Book an appointment with one of your doctors."
+    },
+    "past": {
+      "emptyTitle": "No Past Appointments",
+      "emptySubtitle": "Your appointment history will appear here."
+    },
+    "bookingFlow": {
+      "loadingAvailability": "Loading availability...",
+      "selectDateTimeTitle": "Select Date & Time",
+      "availableTimes": "Available Times",
+      "noSlotsMessage": "No available slots for this doctor in {{month}}.",
+      "noSlotsSuggestion": "Try selecting a different month or doctor.",
+      "loadingDoctors": "Loading doctors...",
+      "noConnectedDoctorsTitle": "No Connected Doctors",
+      "noConnectedDoctorsMessage": "You need to connect with doctors before booking appointments.",
+      "findDoctorsButton": "Find Doctors",
+      "selectDoctorTitle": "Select Doctor",
+      "noDoctorsAvailable": "No doctors available",
+      "loadingDetails": "Loading...",
+      "confirmAppointmentTitle": "Confirm Appointment",
+      "consultationFee": "Consultation Fee",
+      "appointmentTypeTitle": "Appointment Type",
+      "reasonForVisitTitle": "Reason for Visit",
+      "reasonPlaceholder": "Briefly describe your symptoms or reason for the visit"
+    },
+    "video":{
+      "tryAgain": "Try Again",
+      "loadingCall":"Connecting to call...",
+      "callNotFound":"Something went wrong"
+    }
   }
 }

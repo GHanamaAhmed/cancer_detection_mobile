@@ -30,6 +30,7 @@ import {
 import { Alert, Modal, View as RNView } from "react-native";
 import { Trash2 } from "lucide-react-native";
 import ENV from "~/lib/env";
+import i18n from "~/i18n";
 
 /**
  * Result Detail Screen - Shows detailed information about a skin check case
@@ -55,25 +56,22 @@ export default function ResultDetailScreen() {
     fetchCaseDetail()
       .then(() => setRefreshing(false))
       .catch((err) => {
-        console.error("Error refreshing case detail:", err);
+        console.error(i18n.t("result.loadError"), err);
         setRefreshing(false);
       });
   };
   /**
    * Fetches case detail data from API
    */
-
   const fetchCaseDetail = async (): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
-
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
         router.replace("/");
         return;
       }
-
       const response = await fetch(
         `${ENV.API_URL}/api/mobile/result/${params.id}`,
         {
@@ -82,32 +80,25 @@ export default function ResultDetailScreen() {
           },
         }
       );
-
       const data: ApiResponse<ResultDetailData> = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch case detail");
+        throw new Error(data.error || i18n.t("result.loadError"));
       }
-
       setCaseDetail(data.data || null);
     } catch (error) {
-      console.error("Error fetching case detail:", error);
+      console.error(i18n.t("result.loadError"), error);
       setError(
-        error instanceof Error ? error.message : "Failed to load case detail"
+        error instanceof Error ? error.message : i18n.t("result.loadError")
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch case details on mount
   useEffect(() => {
     fetchCaseDetail();
   }, [params.id]);
 
-  /**
-   * Changes the active tab with animation
-   */
   const changeTab = (tab: string) => {
     Animated.sequence([
       Animated.timing(fadeAnim, {
@@ -121,7 +112,6 @@ export default function ResultDetailScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-
     setTimeout(() => {
       setActiveTab(tab);
     }, 150);
@@ -131,50 +121,45 @@ export default function ResultDetailScreen() {
    * Get badge style based on risk level
    */
   const getRiskBadge = (risk: string) => {
-    console.log("Risk Level:", risk);
-
     switch (risk.toUpperCase()) {
       case RiskLevel.LOW:
         return {
           color: isDarkColorScheme ? "#10b981" : "#059669",
           bg: isDarkColorScheme ? "bg-green-900/30" : "bg-green-100",
           text: isDarkColorScheme ? "text-green-400" : "text-green-700",
-          label: "Low Risk",
+          label: i18n.t("result.riskLevel.low"),
         };
       case RiskLevel.MEDIUM:
         return {
           color: isDarkColorScheme ? "#f59e0b" : "#d97706",
           bg: isDarkColorScheme ? "bg-yellow-900/30" : "bg-yellow-100",
           text: isDarkColorScheme ? "text-yellow-400" : "text-yellow-700",
-          label: "Medium Risk",
+          label: i18n.t("result.riskLevel.medium"),
         };
       case RiskLevel.HIGH:
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/30" : "bg-red-100",
           text: isDarkColorScheme ? "text-red-400" : "text-red-700",
-          label: "High Risk",
+          label: i18n.t("result.riskLevel.high"),
         };
       case RiskLevel.CRITICAL:
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/50" : "bg-red-200",
           text: isDarkColorScheme ? "text-red-300" : "text-red-700",
-          label: "Critical Risk",
+          label: i18n.t("result.riskLevel.critical"),
         };
       default:
         return {
           color: isDarkColorScheme ? "#94a3b8" : "#64748b",
           bg: isDarkColorScheme ? "bg-slate-800" : "bg-slate-100",
           text: isDarkColorScheme ? "text-slate-400" : "text-slate-700",
-          label: "Unknown",
+          label: i18n.t("result.riskLevel.unknown"),
         };
     }
   };
 
-  /**
-   * Get status badge style
-   */
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "OPEN":
@@ -218,12 +203,11 @@ export default function ResultDetailScreen() {
             color={isDarkColorScheme ? "#64748b" : "#94a3b8"}
           />
           <Text className="mt-2 text-gray-500 dark:text-gray-400">
-            No images available
+            {i18n.t("result.noImagesAvailable")}
           </Text>
         </View>
       );
     }
-
     return (
       <View>
         <View className="rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -233,7 +217,6 @@ export default function ResultDetailScreen() {
             resizeMode="contain"
           />
         </View>
-
         {caseDetail.images.length > 1 && (
           <ScrollView
             horizontal
@@ -259,17 +242,15 @@ export default function ResultDetailScreen() {
             ))}
           </ScrollView>
         )}
-
         <View className="mt-2 flex-row justify-between items-center">
           <Text className="text-xs text-gray-500 dark:text-gray-400">
             {caseDetail.images[activeImageIndex].captureDate}
           </Text>
-
           {caseDetail.images[activeImageIndex].bodyLocation && (
             <Text className="text-xs text-gray-500 dark:text-gray-400">
               {String(caseDetail.images[activeImageIndex].bodyLocation)
                 .replace("_", " ")
-                .toLowerCase()}
+                .toLowerCase() || i18n.t("result.unknownLocation")}
             </Text>
           )}
         </View>
@@ -415,44 +396,43 @@ export default function ResultDetailScreen() {
   const renderDetailsTab = () => {
     return (
       <Animated.View style={{ opacity: fadeAnim }}>
-        {/* Case overview section */}
         <View className="mt-4">
           <Text className="font-medium text-slate-800 dark:text-white mb-2">
-            Case Overview
+            {i18n.t("result.caseOverview")}
           </Text>
           <View className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-slate-800 p-4">
             <View className="flex-row justify-between items-center">
               <Text className="text-slate-600 dark:text-slate-300">
-                Case Number:
+                {i18n.t("result.caseNumber")}
               </Text>
               <Text className="font-medium text-slate-800 dark:text-white">
                 {caseDetail?.caseNumber}
               </Text>
             </View>
-
             <View className="flex-row justify-between items-center mt-2">
-              <Text className="text-slate-600 dark:text-slate-300">Date:</Text>
+              <Text className="text-slate-600 dark:text-slate-300">
+                {i18n.t("result.date")}
+              </Text>
               <Text className="text-slate-800 dark:text-white">
                 {caseDetail?.formattedDate}
               </Text>
             </View>
-
             <View className="flex-row justify-between items-center mt-2">
               <Text className="text-slate-600 dark:text-slate-300">
-                Status:
+                {i18n.t("result.status")}
               </Text>
               <Badge
                 className={`${getStatusBadge(caseDetail?.status || "").bg} ${
                   getStatusBadge(caseDetail?.status || "").text
                 }`}
               >
-                {caseDetail?.status?.replace("_", " ") || "Unknown"}
+                {caseDetail?.status?.replace("_", " ") ||
+                  i18n.t("result.unknownStatus")}
               </Badge>
             </View>
-
             <View className="flex-row justify-between items-center mt-2">
               <Text className="text-slate-600 dark:text-slate-300">
-                Risk Level:
+                {i18n.t("result.riskLevel.label")}
               </Text>
               <Badge
                 className={`${getRiskBadge(caseDetail?.riskLevel || "").bg} ${
@@ -462,55 +442,51 @@ export default function ResultDetailScreen() {
                 {getRiskBadge(caseDetail?.riskLevel || "").label}
               </Badge>
             </View>
-
             <View className="flex-row justify-between items-center mt-2">
               <Text className="text-slate-600 dark:text-slate-300">
-                Lesion Type:
+                {i18n.t("result.lesionType")}
               </Text>
               <Text className="text-slate-800 dark:text-white">
-                {caseDetail?.lesionType?.replace("_", " ") || "Unknown"}
+                {caseDetail?.lesionType?.replace("_", " ") ||
+                  i18n.t("result.unknown")}
               </Text>
             </View>
-
             <View className="flex-row justify-between items-center mt-2">
               <Text className="text-slate-600 dark:text-slate-300">
-                Body Location:
+                {i18n.t("result.bodyLocation")}
               </Text>
               <Text className="text-slate-800 dark:text-white">
                 {caseDetail?.bodyLocation
                   ? String(caseDetail.bodyLocation)
                       .replace("_", " ")
                       .toLowerCase()
-                  : "Unknown"}
+                  : i18n.t("result.unknown")}
               </Text>
             </View>
-
             {caseDetail?.firstNoticed && (
               <View className="flex-row justify-between items-center mt-2">
                 <Text className="text-slate-600 dark:text-slate-300">
-                  First Noticed:
+                  {i18n.t("result.firstNoticed")}
                 </Text>
                 <Text className="text-slate-800 dark:text-white">
                   {caseDetail.firstNoticed}
                 </Text>
               </View>
             )}
-
             {caseDetail?.symptoms && (
               <View className="mt-3">
                 <Text className="text-slate-600 dark:text-slate-300 mb-1">
-                  Symptoms:
+                  {i18n.t("result.symptoms")}
                 </Text>
                 <Text className="text-slate-800 dark:text-white">
                   {caseDetail.symptoms}
                 </Text>
               </View>
             )}
-
             {caseDetail?.diagnosis && (
               <View className="mt-3">
                 <Text className="text-slate-600 dark:text-slate-300 mb-1">
-                  Diagnosis:
+                  {i18n.t("result.diagnosis")}
                 </Text>
                 <Text className="text-slate-800 dark:text-white">
                   {caseDetail.diagnosis}
@@ -519,11 +495,10 @@ export default function ResultDetailScreen() {
             )}
           </View>
         </View>
-        {/* Next Appointment */}
         {caseDetail?.nextAppointment && (
           <View className="mt-6">
             <Text className="font-medium text-slate-800 dark:text-white mb-2">
-              Upcoming Appointment
+              {i18n.t("result.upcomingAppointment")}
             </Text>
             <TouchableOpacity
               onPress={() =>
@@ -574,7 +549,6 @@ export default function ResultDetailScreen() {
             </TouchableOpacity>
           </View>
         )}
-        {/* Replace the plain comment with JSX comment */}
         <View className="mt-6 mb-8">
           <Button
             variant="outline"
@@ -590,42 +564,26 @@ export default function ResultDetailScreen() {
                   color={isDarkColorScheme ? "#ef4444" : "#dc2626"}
                 />
                 <Text className="ml-2 text-red-500 dark:text-red-400">
-                  Deleting...
+                  {i18n.t("result.deleting")}
                 </Text>
               </View>
             ) : (
               <>
                 <Trash2 className="mr-2 h-4 w-4" />
-                <Text>Delete Case and Images</Text>
+                <Text>{i18n.t("result.deleteCase")}</Text>
               </>
             )}
           </Button>
           <Text className="text-xs text-center mt-2 text-slate-500 dark:text-slate-400">
-            Warning: This action is permanent and cannot be undone.
+            {i18n.t("result.deleteWarning")}
           </Text>
         </View>
-
-        {/* Loading overlay for when deletion is in progress */}
-        {deletingCase && (
-          <RNView className="absolute inset-0 bg-black/50 items-center justify-center">
-            <View className="bg-white dark:bg-slate-800 p-6 rounded-xl">
-              <ActivityIndicator
-                size="large"
-                color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
-              />
-              <Text className="mt-4 text-center text-slate-800 dark:text-white">
-                Deleting case and images...
-              </Text>
-            </View>
-          </RNView>
-        )}
-        {/* Book appointment button */}
         {!caseDetail?.nextAppointment && (
           <Button
             onPress={() => router.push("/appointments")}
             className="mt-6 bg-teal-500"
           >
-            Find a Doctor
+            {i18n.t("result.findDoctor")}
           </Button>
         )}
       </Animated.View>
@@ -879,14 +837,13 @@ export default function ResultDetailScreen() {
     >
       <Stack.Screen
         options={{
-          title: caseDetail?.caseNumber || "Case Details",
+          title: caseDetail?.caseNumber || i18n.t("result.detailsTitle"),
           headerStyle: {
             backgroundColor: isDarkColorScheme ? "#0f172a" : "#f0fdfa",
           },
           headerTintColor: isDarkColorScheme ? "#f8fafc" : "#0f172a",
         }}
       />
-
       {loading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator
@@ -894,7 +851,7 @@ export default function ResultDetailScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading case details...
+            {i18n.t("result.loading")}
           </Text>
         </View>
       ) : error ? (
@@ -912,7 +869,7 @@ export default function ResultDetailScreen() {
             className="mt-4"
             variant="primary"
           >
-            Try Again
+            {i18n.t("result.tryAgain")}
           </Button>
         </View>
       ) : (
@@ -922,7 +879,6 @@ export default function ResultDetailScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
         >
-          {/* Risk Level Banner */}
           {caseDetail?.riskLevel && (
             <View
               className={`${
@@ -952,17 +908,13 @@ export default function ResultDetailScreen() {
               {caseDetail.latestAnalysis?.reviewedByDoctor && (
                 <View className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded-full">
                   <Text className="text-xs text-blue-700 dark:text-blue-400">
-                    Doctor Reviewed
+                    {i18n.t("result.doctorReviewed")}
                   </Text>
                 </View>
               )}
             </View>
           )}
-
-          {/* Images */}
           {renderImageGallery()}
-
-          {/* Tab Navigation */}
           <View className="flex-row border-b border-gray-200 dark:border-gray-700 mt-6">
             <TouchableOpacity
               onPress={() => changeTab("details")}
@@ -979,10 +931,9 @@ export default function ResultDetailScreen() {
                     : "text-slate-500 dark:text-slate-400"
                 }`}
               >
-                Details
+                {i18n.t("result.tab.details")}
               </Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               onPress={() => changeTab("analysis")}
               className={`flex-1 py-2 ${
@@ -998,16 +949,12 @@ export default function ResultDetailScreen() {
                     : "text-slate-500 dark:text-slate-400"
                 }`}
               >
-                Analysis
+                {i18n.t("result.tab.analysis")}
               </Text>
             </TouchableOpacity>
           </View>
-
-          {/* Tab Content */}
           {activeTab === "details" && renderDetailsTab()}
           {activeTab === "analysis" && renderAnalysisTab()}
-
-          {/* Add some padding at bottom */}
           <View className="h-8" />
         </ScrollView>
       )}

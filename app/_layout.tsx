@@ -3,12 +3,29 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "~/components/theme-provider";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useEffect, useState } from "react";
+import { initI18n } from "~/i18n";
+import { View } from "react-native";
 
 export default function RootLayout() {
-  return (
+  const [isI18nReady, setIsI18nReady] = useState(false);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      console.log("App.js: Starting i18n initialization...");
+      await initI18n(); // THIS IS CRUCIAL: AWAIT THE ASYNC FUNCTION
+      console.log(
+        "App.js: i18n initialization complete. Setting isI18nReady to true."
+      );
+      setIsI18nReady(true);
+    };
+
+    initializeApp();
+  }, []); // Run only once on mount
+  return isI18nReady ? (
     <GestureHandlerRootView>
-      <SafeAreaProvider >
+      <SafeAreaProvider>
         <ThemeProvider>
           <StatusBar style="auto" />
           <Stack
@@ -26,5 +43,7 @@ export default function RootLayout() {
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+  ) : (
+    <View></View>
   );
 }

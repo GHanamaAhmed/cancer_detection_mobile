@@ -12,9 +12,6 @@
     "clean": "rm -rf .expo node_modules",
     "postinstall": "npx tailwindcss -i ./global.css -o ./node_modules/.cache/nativewind/global.css"
   },
-  "overrides": {
-    "@expo/config-plugins": "9.0.17"
-  },
   "dependencies": {
     "@cloudinary/url-gen": "^1.21.0",
     "@config-plugins/react-native-webrtc": "^10.0.0",
@@ -29,6 +26,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "expo": "^52.0.25",
+    "expo-av": "~15.0.2",
     "expo-build-properties": "~0.13.3",
     "expo-camera": "~16.0.18",
     "expo-constants": "~17.0.8",
@@ -66,13 +64,35 @@
     "tailwindcss": "3.3.5",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^4.4.7",
-    "expo-av": "~15.0.2"
+    "expo-updates": "~0.27.4"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@expo/cli": "0.22.26",
     "@types/react": "~18.3.12",
     "patch-package": "^8.0.0",
     "typescript": "^5.3.3"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false,
+        "exclude": [
+          "@pusher/pusher-websocket-react-native",
+          "react-native-incall-manager",
+          "react-native-slider",
+          "@cloudinary/url-gen",
+          "@config-plugins/react-native-webrtc",
+          "@stream-io/react-native-webrtc",
+          "@stream-io/video-react-native-sdk",
+          "class-variance-authority",
+          "react-delegate-component",
+          "react-native-slide",
+          "react-native-sliders",
+          "tailwindcss-animate"
+        ]
+      }
+    }
   },
   "private": true
 }

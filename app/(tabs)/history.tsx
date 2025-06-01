@@ -13,7 +13,6 @@ import { Stack, router } from "expo-router";
 import { Card } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import ENV from "~/lib/env";
-
 import { Badge } from "~/components/ui/badge";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { Feather } from "@expo/vector-icons";
@@ -24,10 +23,8 @@ import {
   LesionCaseHistory,
   RiskLevel,
 } from "~/types/mobile-api";
+import i18n from "~/i18n";
 
-/**
- * History screen displaying all past skin checks
- */
 export default function HistoryScreen() {
   const { isDarkColorScheme } = useColorScheme();
   const [historyData, setHistoryData] = useState<HistoryData | null>(null);
@@ -37,9 +34,6 @@ export default function HistoryScreen() {
   const [page, setPage] = useState<number>(1);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
 
-  /**
-   * Fetches history data from API with pagination
-   */
   const fetchHistoryData = async (
     pageNum: number = 1,
     showRefresh: boolean = false
@@ -50,7 +44,6 @@ export default function HistoryScreen() {
       else setLoadingMore(true);
 
       setError(null);
-
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
         router.replace("/");
@@ -58,22 +51,17 @@ export default function HistoryScreen() {
       }
 
       const response = await fetch(
-        `http://192.168.10.30:3000/api/mobile/user/history?page=${pageNum}&limit=10`,
+        `${ENV.API_URL}/api/mobile/user/history?page=${pageNum}&limit=10`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       const data: ApiResponse<HistoryData> = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch history data");
+        throw new Error(data.error || i18n.t("history.fetchError"));
       }
 
-      // If first page or refreshing, replace all data
-      // Otherwise, append to existing data
       if (pageNum === 1) {
         setHistoryData(data.data || null);
       } else {
@@ -85,12 +73,11 @@ export default function HistoryScreen() {
           };
         });
       }
-
       setPage(pageNum);
     } catch (error) {
       console.error("Error fetching history data:", error);
       setError(
-        error instanceof Error ? error.message : "Failed to load history data"
+        error instanceof Error ? error.message : i18n.t("history.loadError")
       );
     } finally {
       setLoading(false);
@@ -103,16 +90,8 @@ export default function HistoryScreen() {
     fetchHistoryData();
   }, []);
 
-  /**
-   * Pull-to-refresh handler
-   */
-  const handleRefresh = useCallback((): void => {
-    fetchHistoryData(1, true);
-  }, []);
+  const handleRefresh = useCallback(() => fetchHistoryData(1, true), []);
 
-  /**
-   * Load more data when reaching the end of the list
-   */
   const handleLoadMore = useCallback((): void => {
     if (
       !loadingMore &&
@@ -124,9 +103,6 @@ export default function HistoryScreen() {
     }
   }, [loadingMore, historyData, page]);
 
-  /**
-   * Get badge style based on risk level
-   */
   const getRiskBadge = (risk: string) => {
     switch (risk) {
       case RiskLevel.LOW:
@@ -134,42 +110,39 @@ export default function HistoryScreen() {
           color: isDarkColorScheme ? "#10b981" : "#059669",
           bg: isDarkColorScheme ? "bg-green-900/30" : "bg-green-100",
           text: isDarkColorScheme ? "text-green-400" : "text-green-700",
-          label: "Low Risk",
+          label: i18n.t("history.lowRisk"),
         };
       case RiskLevel.MEDIUM:
         return {
           color: isDarkColorScheme ? "#f59e0b" : "#d97706",
           bg: isDarkColorScheme ? "bg-yellow-900/30" : "bg-yellow-100",
           text: isDarkColorScheme ? "text-yellow-400" : "text-yellow-700",
-          label: "Medium Risk",
+          label: i18n.t("history.mediumRisk"),
         };
       case RiskLevel.HIGH:
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/30" : "bg-red-100",
           text: isDarkColorScheme ? "text-red-400" : "text-red-700",
-          label: "High Risk",
+          label: i18n.t("history.highRisk"),
         };
       case RiskLevel.CRITICAL:
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/50" : "bg-red-200",
           text: isDarkColorScheme ? "text-red-300" : "text-red-700",
-          label: "Critical Risk",
+          label: i18n.t("history.criticalRisk"),
         };
       default:
         return {
           color: isDarkColorScheme ? "#94a3b8" : "#64748b",
           bg: isDarkColorScheme ? "bg-slate-800" : "bg-slate-100",
           text: isDarkColorScheme ? "text-slate-400" : "text-slate-700",
-          label: "Unknown",
+          label: i18n.t("history.unknownRisk"),
         };
     }
   };
 
-  /**
-   * Render a single history item
-   */
   const renderItem = ({ item }: { item: LesionCaseHistory }) => {
     const riskStyle = getRiskBadge(item.riskLevel);
 
@@ -200,7 +173,6 @@ export default function HistoryScreen() {
                 />
               </View>
             )}
-
             <View className="p-3 flex-1 justify-between">
               <View>
                 <Text className="font-medium text-slate-800 dark:text-white">
@@ -209,22 +181,19 @@ export default function HistoryScreen() {
                 <Text className="text-xs text-slate-500 dark:text-slate-400 mb-1">
                   {item.formattedDate}
                 </Text>
-
                 <View className="flex-row items-center mt-1">
                   <Badge className={`${riskStyle.bg} ${riskStyle.text}`}>
                     {riskStyle.label}
                   </Badge>
-
                   {item.latestAnalysis?.reviewedByDoctor && (
                     <View className="ml-2 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded-full">
                       <Text className="text-xs text-blue-700 dark:text-blue-400">
-                        Doctor Reviewed
+                        {i18n.t("history.doctorReviewed")}
                       </Text>
                     </View>
                   )}
                 </View>
               </View>
-
               <View className="flex-row items-center justify-between mt-2">
                 <View className="flex-row items-center">
                   <Feather
@@ -234,18 +203,18 @@ export default function HistoryScreen() {
                   />
                   <Text className="text-xs text-slate-500 dark:text-slate-400 ml-1">
                     {item.imageCount}{" "}
-                    {item.imageCount === 1 ? "image" : "images"}
+                    {item.imageCount === 1
+                      ? i18n.t("history.imageSingular")
+                      : i18n.t("history.imagePlural")}
                   </Text>
                 </View>
-
                 <Text className="text-xs text-slate-500 dark:text-slate-400">
                   {item.bodyLocation
                     ? String(item.bodyLocation).replace("_", " ").toLowerCase()
-                    : "Unknown location"}
+                    : i18n.t("history.unknownLocation")}
                 </Text>
               </View>
             </View>
-
             <View className="absolute top-2 right-2">
               <Feather
                 name="chevron-right"
@@ -259,9 +228,6 @@ export default function HistoryScreen() {
     );
   };
 
-  /**
-   * Displayed when there are no history items
-   */
   const ListEmptyComponent = () => (
     <View className="items-center justify-center py-8">
       <Feather
@@ -270,20 +236,17 @@ export default function HistoryScreen() {
         color={isDarkColorScheme ? "#64748b" : "#94a3b8"}
       />
       <Text className="mt-4 text-center text-slate-600 dark:text-slate-400">
-        No skin check history yet.
+        {i18n.t("history.emptyTitle")}
       </Text>
       <Text className="mb-4 text-center text-slate-500 dark:text-slate-500">
-        Take your first scan to get started.
+        {i18n.t("history.emptySubtitle")}
       </Text>
       <Button onPress={() => router.push("/(tabs)/capture")} variant="primary">
-        Take a Scan
+        {i18n.t("history.scanButton")}
       </Button>
     </View>
   );
 
-  /**
-   * Displayed at the bottom of the list
-   */
   const ListFooterComponent = () => {
     if (loadingMore) {
       return (
@@ -295,7 +258,6 @@ export default function HistoryScreen() {
         </View>
       );
     }
-
     if (
       historyData &&
       historyData.pagination &&
@@ -304,11 +266,10 @@ export default function HistoryScreen() {
     ) {
       return (
         <Text className="text-center py-4 text-slate-500 dark:text-slate-400">
-          End of history
+          {i18n.t("history.endOfHistory")}
         </Text>
       );
     }
-
     return null;
   };
 
@@ -319,14 +280,13 @@ export default function HistoryScreen() {
     >
       <Stack.Screen
         options={{
-          title: "Scan History",
+          title: i18n.t("history.title"),
           headerStyle: {
             backgroundColor: isDarkColorScheme ? "#0f172a" : "#f0fdfa",
           },
           headerTintColor: isDarkColorScheme ? "#f8fafc" : "#0f172a",
         }}
       />
-
       {loading && !refreshing ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator
@@ -334,7 +294,7 @@ export default function HistoryScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading your history...
+            {i18n.t("history.loading")}
           </Text>
         </View>
       ) : error ? (
@@ -352,7 +312,7 @@ export default function HistoryScreen() {
             className="mt-4"
             variant="primary"
           >
-            Try Again
+            {i18n.t("history.tryAgain")}
           </Button>
         </View>
       ) : (

@@ -22,6 +22,8 @@ import { DashboardData } from "~/types/mobile-api";
 import ENV from "~/lib/env";
 import { usePusher } from "~/lib/pusher-client";
 import { Audio } from "expo-av";
+import i18n from "../../i18n";
+import { SwitchLanguage } from "~/components/langugesSwitcher";
 // Define Notification type
 type Notification = {
   id: string;
@@ -256,6 +258,7 @@ export default function HomeScreen() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   // Notification Modal Component
+
   const NotificationModal = () => (
     <Modal
       animationType="slide"
@@ -267,7 +270,7 @@ export default function HomeScreen() {
         <View className="bg-white dark:bg-slate-800 rounded-t-3xl h-2/3">
           <View className="flex-row justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
             <Text className="text-xl font-bold text-slate-800 dark:text-white">
-              Notifications
+              {i18n.t("home.notifications.title")} {/* <--- Using i18n.t() */}
             </Text>
             <TouchableOpacity onPress={() => setShowNotifications(false)}>
               <Feather
@@ -285,7 +288,8 @@ export default function HomeScreen() {
                 color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
               />
               <Text className="mt-2 text-slate-600 dark:text-slate-400">
-                Loading notifications...
+                {i18n.t("home.notifications.loading")}{" "}
+                {/* <--- Using i18n.t() */}
               </Text>
             </View>
           ) : notifications.length > 0 ? (
@@ -341,7 +345,8 @@ export default function HomeScreen() {
                 color={isDarkColorScheme ? "#94a3b8" : "#64748b"}
               />
               <Text className="mt-4 text-center text-slate-600 dark:text-slate-400">
-                No notifications yet
+                {i18n.t("home.notifications.noneYet")}{" "}
+                {/* <--- Using i18n.t() */}
               </Text>
             </View>
           )}
@@ -360,35 +365,35 @@ export default function HomeScreen() {
           color: isDarkColorScheme ? "#10b981" : "#059669",
           bg: isDarkColorScheme ? "bg-green-900/30" : "bg-green-100",
           text: isDarkColorScheme ? "text-green-400" : "text-green-700",
-          label: "Low Risk",
+          label: i18n.t("home.riskLabels.low"),
         };
       case "MEDIUM":
         return {
           color: isDarkColorScheme ? "#f59e0b" : "#d97706",
           bg: isDarkColorScheme ? "bg-yellow-900/30" : "bg-yellow-100",
           text: isDarkColorScheme ? "text-yellow-400" : "text-yellow-700",
-          label: "Medium Risk",
+          label: i18n.t("home.riskLabels.medium"),
         };
       case "HIGH":
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/30" : "bg-red-100",
           text: isDarkColorScheme ? "text-red-400" : "text-red-700",
-          label: "High Risk",
+          label: i18n.t("home.riskLabels.high"),
         };
       case "CRITICAL":
         return {
           color: isDarkColorScheme ? "#ef4444" : "#dc2626",
           bg: isDarkColorScheme ? "bg-red-900/50" : "bg-red-200",
           text: isDarkColorScheme ? "text-red-300" : "text-red-700",
-          label: "Critical Risk",
+          label: i18n.t("home.riskLabels.critical"),
         };
       default:
         return {
           color: isDarkColorScheme ? "#94a3b8" : "#64748b",
           bg: isDarkColorScheme ? "bg-slate-800" : "bg-slate-100",
           text: isDarkColorScheme ? "text-slate-400" : "text-slate-700",
-          label: "Unknown",
+          label: i18n.t("home.riskLabels.unknown"),
         };
     }
   };
@@ -399,6 +404,7 @@ export default function HomeScreen() {
       edges={["top"]}
     >
       {/* Notification Modal */}
+      {/* Assuming NotificationModal handles its own i18n internally */}
       <NotificationModal />
 
       <ScrollView
@@ -417,7 +423,7 @@ export default function HomeScreen() {
                   color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
                 />
                 <Text className="mt-4 text-slate-600 dark:text-slate-400">
-                  Loading your dashboard...
+                  {i18n.t("home.dashboard.loading")}
                 </Text>
               </View>
             ) : error ? (
@@ -435,7 +441,7 @@ export default function HomeScreen() {
                   className="mt-4"
                   variant="primary"
                 >
-                  Try Again
+                  {i18n.t("home.dashboard.error.tryAgain")}
                 </Button>
               </View>
             ) : (
@@ -458,36 +464,40 @@ export default function HomeScreen() {
                     />
                     <View>
                       <Text className="text-xl font-bold text-slate-800 dark:text-white">
-                        {dashboardData?.user?.fullName || "Welcome"}
+                        {dashboardData?.user?.fullName ||
+                          i18n.t("home.dashboard.userSection.welcome")}
                       </Text>
                       <Text className="text-sm text-slate-500 dark:text-slate-400">
-                        Let's check your skin health today
+                        {i18n.t("home.dashboard.userSection.subtitle")}
                       </Text>
                     </View>
                   </View>
-                  <TouchableOpacity
-                    className="relative mb-6"
-                    onPress={() => setShowNotifications(true)}
-                  >
-                    <Feather
-                      name="bell"
-                      size={24}
-                      color={isDarkColorScheme ? "#f1f5f9" : "#334155"}
-                    />
-                    {unreadCount > 0 && (
-                      <View className="absolute -right-2 -top-2 h-5 w-5 bg-red-500 rounded-full items-center justify-center">
-                        <Text className="text-xs text-white font-bold">
-                          {unreadCount > 9 ? "9+" : unreadCount}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
+                  <View className="flex flex-row items-center gap-3">
+                    <SwitchLanguage className="mb-6" />
+                    <TouchableOpacity
+                      className="relative mb-6 "
+                      onPress={() => setShowNotifications(true)}
+                    >
+                      <Feather
+                        name="bell"
+                        size={24}
+                        color={isDarkColorScheme ? "#f1f5f9" : "#334155"}
+                      />
+                      {unreadCount > 0 && (
+                        <View className="absolute -right-2 -top-2 h-5 w-5 bg-red-500 rounded-full items-center justify-center">
+                          <Text className="text-xs text-white font-bold">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
                 {/* Health Analytics */}
                 <View className="mb-6">
                   <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                    Skin Health Analytics
+                    {i18n.t("home.dashboard.analytics.title")}
                   </Text>
 
                   {dashboardData?.analytics ? (
@@ -504,7 +514,7 @@ export default function HomeScreen() {
                             {dashboardData.analytics.totalScans || 0}
                           </Text>
                           <Text className="text-xs text-gray-500 dark:text-gray-400">
-                            Total Scans
+                            {i18n.t("home.dashboard.analytics.totalScans")}
                           </Text>
                         </View>
 
@@ -527,7 +537,7 @@ export default function HomeScreen() {
                             {dashboardData.analytics.lowRiskCases || 0}
                           </Text>
                           <Text className="text-xs text-gray-500 dark:text-gray-400">
-                            Low Risk Lesions
+                            {i18n.t("home.dashboard.analytics.lowRiskLesions")}
                           </Text>
                         </View>
                       </View>
@@ -544,7 +554,7 @@ export default function HomeScreen() {
                             {dashboardData.analytics.daysSinceLastCheck || 0}
                           </Text>
                           <Text className="text-xs text-gray-500 dark:text-gray-400">
-                            Days Since Check
+                            {i18n.t("home.dashboard.analytics.daysSinceCheck")}
                           </Text>
                         </View>
 
@@ -567,7 +577,9 @@ export default function HomeScreen() {
                             {dashboardData.analytics.monitoredLesions || 0}
                           </Text>
                           <Text className="text-xs text-gray-500 dark:text-gray-400">
-                            Active Monitoring
+                            {i18n.t(
+                              "home.dashboard.analytics.activeMonitoring"
+                            )}
                           </Text>
                         </View>
                       </View>
@@ -575,14 +587,14 @@ export default function HomeScreen() {
                   ) : (
                     <View className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-slate-800 p-4">
                       <Text className="text-center text-gray-500 dark:text-gray-400">
-                        No health analytics available yet.
+                        {i18n.t("home.dashboard.analytics.noAnalytics")}
                       </Text>
                       <TouchableOpacity
                         onPress={() => router.push("/(tabs)/capture")}
                         className="mt-3 bg-teal-500 rounded-lg py-2 items-center"
                       >
                         <Text className="text-white font-medium">
-                          Take your first scan
+                          {i18n.t("home.dashboard.analytics.takeFirstScan")}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -593,14 +605,14 @@ export default function HomeScreen() {
                 <View className="mb-6">
                   <View className="flex-row justify-between items-center mb-3">
                     <Text className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Recent Results
+                      {i18n.t("home.dashboard.recentResults.title")}
                     </Text>
                     <TouchableOpacity
                       onPress={() => router.push("/(tabs)/history")}
                       className="py-1"
                     >
                       <Text className="text-xs font-medium text-teal-600 dark:text-teal-400">
-                        See All
+                        {i18n.t("home.dashboard.recentResults.seeAll")}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -626,13 +638,17 @@ export default function HomeScreen() {
                                 {result.title}
                               </Text>
                               <Text className="text-xs text-slate-500 dark:text-slate-400">
-                                {result.date}
+                                {/* Date is usually formatted, not localized directly */}
+                                {new Date(result.date).toLocaleDateString(
+                                  i18n.locale
+                                )}
                               </Text>
                             </View>
                             <Badge
                               className={`${riskStyle.bg} ${riskStyle.text}`}
                             >
-                              {riskStyle.label}
+                              {riskStyle.label}{" "}
+                              {/* This is already localized in getRiskBadge */}
                             </Badge>
                           </TouchableOpacity>
                         );
@@ -641,7 +657,7 @@ export default function HomeScreen() {
                   ) : (
                     <View className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-slate-800 p-4">
                       <Text className="text-center text-gray-500 dark:text-gray-400">
-                        No recent results available.
+                        {i18n.t("home.dashboard.recentResults.noResults")}
                       </Text>
                     </View>
                   )}
@@ -650,7 +666,7 @@ export default function HomeScreen() {
                 {/* Upcoming Appointment */}
                 <View>
                   <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                    Upcoming Appointment
+                    {i18n.t("home.dashboard.upcomingAppointment.title")}
                   </Text>
 
                   {dashboardData?.upcomingAppointment ? (
@@ -681,10 +697,19 @@ export default function HomeScreen() {
                         </View>
                         <View className="ml-auto">
                           <Text className="text-right font-medium text-slate-800 dark:text-white">
-                            {dashboardData.upcomingAppointment.date}
+                            {/* Date is usually formatted, not localized directly */}
+                            {new Date(
+                              dashboardData.upcomingAppointment.date
+                            ).toLocaleDateString(i18n.locale)}
                           </Text>
                           <Text className="text-right text-xs text-slate-500 dark:text-slate-400">
-                            {dashboardData.upcomingAppointment.time}
+                            {/* Time is usually formatted, not localized directly */}
+                            {new Date(
+                              `2000-01-01T${dashboardData.upcomingAppointment.time}`
+                            ).toLocaleTimeString(i18n.locale, {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </Text>
                         </View>
                       </View>
@@ -692,14 +717,18 @@ export default function HomeScreen() {
                   ) : (
                     <View className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-slate-800 p-4">
                       <Text className="text-center text-gray-500 dark:text-gray-400">
-                        No upcoming appointments.
+                        {i18n.t(
+                          "home.dashboard.upcomingAppointment.noAppointments"
+                        )}
                       </Text>
                       <TouchableOpacity
                         onPress={() => router.push("/doctors")}
                         className="mt-3 bg-teal-500 rounded-lg py-2 items-center"
                       >
                         <Text className="text-white font-medium">
-                          Find a Doctor
+                          {i18n.t(
+                            "home.dashboard.upcomingAppointment.findDoctor"
+                          )}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -715,7 +744,7 @@ export default function HomeScreen() {
                       icon={<Feather name="camera" size={18} color="white" />}
                       iconPosition="left"
                     >
-                      New Scan
+                      {i18n.t("home.dashboard.quickActions.newScan")}
                     </Button>
                     <Button
                       onPress={() => router.push("/history")}
@@ -723,7 +752,7 @@ export default function HomeScreen() {
                       icon={<Feather name="clock" size={18} color="white" />}
                       iconPosition="left"
                     >
-                      History
+                      {i18n.t("home.dashboard.quickActions.history")}
                     </Button>
                   </View>
                 </View>

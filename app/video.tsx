@@ -27,7 +27,7 @@ import {
 } from "@stream-io/video-react-native-sdk";
 import ENV from "~/lib/env";
 import { CallContent } from "@stream-io/video-react-native-sdk";
-
+import i8n from "~/i18n";
 // Create getstream client outside component to avoid recreating it
 let streamClient: StreamVideoClient | null = null;
 
@@ -91,7 +91,9 @@ const ErrorView = ({
         className="bg-teal-600 px-6 py-3 rounded-lg mt-6"
         onPress={onRetry}
       >
-        <Text className="text-white font-medium">Try Again</Text>
+        <Text className="text-white font-medium">
+          {i8n.t("video.tryAgain")}
+        </Text>
       </Pressable>
     </View>
   </SafeAreaView>
@@ -274,7 +276,7 @@ export default function Video() {
     return (
       <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
         <ActivityIndicator size="large" color="#00C4B4" />
-        <Text className="text-white mt-4">Connecting to call...</Text>
+        <Text className="text-white mt-4">{i8n.t("video.loadingCall")}</Text>
       </SafeAreaView>
     );
   }
@@ -301,12 +303,14 @@ export default function Video() {
   // Fallback
   return (
     <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
-      <Text className="text-white">Something went wrong</Text>
+      <Text className="text-white">{i8n.t("video.callNotFound")}</Text>
       <Pressable
         className="bg-teal-600 px-6 py-3 rounded-lg mt-6"
         onPress={initializeCall}
       >
-        <Text className="text-white font-medium">Try Again</Text>
+        <Text className="text-white font-medium">
+          {i8n.t("video.tryAgain")}
+        </Text>
       </Pressable>
     </SafeAreaView>
   );

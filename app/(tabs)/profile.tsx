@@ -27,6 +27,7 @@ import * as Notifications from "expo-notifications";
 import { cld, uploadToCloudinary } from "~/lib/cloudinary";
 import { ProfileData } from "~/types/mobile-api";
 import ENV from "~/lib/env";
+import i18n from "~/i18n";
 
 export default function ProfileScreen() {
   const { isDarkColorScheme } = useColorScheme();
@@ -556,7 +557,7 @@ export default function ProfileScreen() {
             color={isDarkColorScheme ? "#0ea5e9" : "#0284c7"}
           />
           <Text className="mt-4 text-slate-600 dark:text-slate-400">
-            Loading your profile...
+            {i18n.t("profile.loading")}
           </Text>
         </View>
       ) : error ? (
@@ -570,7 +571,7 @@ export default function ProfileScreen() {
             {error}
           </Text>
           <Button onPress={fetchProfileData} className="mt-4" variant="primary">
-            Try Again
+            {i18n.t("profile.tryAgain")}
           </Button>
         </View>
       ) : (
@@ -578,7 +579,6 @@ export default function ProfileScreen() {
           className="flex-1 w-full"
           contentContainerStyle={{ flexGrow: 1 }}
         >
-          {" "}
           <ThemeToggle />
           <Card className="w-full max-w-md mx-auto">
             <View className="relative bg-teal-500 pt-12 pb-20">
@@ -635,36 +635,36 @@ export default function ProfileScreen() {
                   </View>
                 </View>
                 <Text className="text-2xl font-bold mt-3 text-slate-800 dark:text-white">
-                  {profileData?.name || "User"}
+                  {profileData?.name || i18n.t("profile.defaultUser")}
                 </Text>
                 <Text className="text-gray-500 dark:text-gray-400 text-sm">
-                  {getAge() ? `Age: ${getAge()}` : ""}
+                  {getAge() ? `${i18n.t("profile.age")}: ${getAge()}` : ""}
                   {getAge() && profileData?.patient?.lastExamDate ? " • " : ""}
                   {profileData?.patient?.lastExamDate
-                    ? `Last exam: ${formatExamDate()}`
+                    ? `${i18n.t("profile.lastExam")}: ${formatExamDate()}`
                     : ""}
                 </Text>
               </View>
 
               <View className="mb-8">
                 <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
-                  Personal Information
+                  {i18n.t("profile.personalInformation")}
                 </Text>
                 <View className="gap-4">
                   <Input
-                    label="Full Name"
+                    label={i18n.t("profile.fullName")}
                     value={fullName}
                     onChangeText={setFullName}
                   />
                   <Input
-                    label="Email"
+                    label={i18n.t("profile.email")}
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
-                    editable={false} // Email shouldn't be easily changeable
+                    editable={false}
                   />
                   <Input
-                    label="Phone Number"
+                    label={i18n.t("profile.phoneNumber")}
                     value={phoneNumber}
                     onChangeText={setPhoneNumber}
                     keyboardType="phone-pad"
@@ -674,18 +674,18 @@ export default function ProfileScreen() {
 
               <View className="mb-8">
                 <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
-                  Permissions
+                  {i18n.t("profile.permissions")}
                 </Text>
                 <View className="gap-3">
                   <View className="flex-row items-center justify-between">
                     <View>
                       <Text className="font-medium text-slate-800 dark:text-white">
-                        Camera Access
+                        {i18n.t("profile.cameraAccess")}
                       </Text>
                       <Text className="text-xs text-gray-500 dark:text-gray-400">
                         {cameraPermission
-                          ? "Permission granted"
-                          : "Allow app to use your camera"}
+                          ? i18n.t("profile.permissionGranted")
+                          : i18n.t("profile.cameraPermissionDescription")}
                       </Text>
                     </View>
                     <Switch
@@ -701,12 +701,12 @@ export default function ProfileScreen() {
                   <View className="flex-row items-center justify-between">
                     <View>
                       <Text className="font-medium text-slate-800 dark:text-white">
-                        Location Access
+                        {i18n.t("profile.locationAccess")}
                       </Text>
                       <Text className="text-xs text-gray-500 dark:text-gray-400">
                         {locationPermission
-                          ? "Permission granted"
-                          : "Allow app to use your location"}
+                          ? i18n.t("profile.permissionGranted")
+                          : i18n.t("profile.locationPermissionDescription")}
                       </Text>
                     </View>
                     <Switch
@@ -722,12 +722,12 @@ export default function ProfileScreen() {
                   <View className="flex-row items-center justify-between">
                     <View>
                       <Text className="font-medium text-slate-800 dark:text-white">
-                        Notifications
+                        {i18n.t("profile.notifications")}
                       </Text>
                       <Text className="text-xs text-gray-500 dark:text-gray-400">
                         {notificationPermission
-                          ? "Permission granted"
-                          : "Receive alerts and reminders"}
+                          ? i18n.t("profile.permissionGranted")
+                          : i18n.t("profile.notificationsDescription")}
                       </Text>
                     </View>
                     <Switch
@@ -745,20 +745,20 @@ export default function ProfileScreen() {
 
               <View className="mb-8">
                 <Text className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4">
-                  Health Information
+                  {i18n.t("profile.healthInformation")}
                 </Text>
                 <View className="gap-3">
                   <View className="gap-1.5">
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-slate-800 dark:text-white">
-                        Height
+                        {i18n.t("profile.height")}
                       </Text>
                       <TextInput
                         className="text-sm font-medium text-slate-800 dark:text-white text-right"
                         value={height}
                         onChangeText={setHeight}
                         keyboardType="numeric"
-                        placeholder="Enter height in cm"
+                        placeholder={i18n.t("profile.enterHeight")}
                         placeholderTextColor={
                           isDarkColorScheme ? "#94a3b8" : "#64748b"
                         }
@@ -769,14 +769,14 @@ export default function ProfileScreen() {
                   <View className="gap-1.5">
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-slate-800 dark:text-white">
-                        Weight
+                        {i18n.t("profile.weight")}
                       </Text>
                       <TextInput
                         className="text-sm font-medium text-slate-800 dark:text-white text-right"
                         value={weight}
                         onChangeText={setWeight}
                         keyboardType="numeric"
-                        placeholder="Enter weight in kg"
+                        placeholder={i18n.t("profile.enterWeight")}
                         placeholderTextColor={
                           isDarkColorScheme ? "#94a3b8" : "#64748b"
                         }
@@ -787,13 +787,13 @@ export default function ProfileScreen() {
                   <View className="gap-1.5">
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-slate-800 dark:text-white">
-                        Allergies
+                        {i18n.t("profile.allergies")}
                       </Text>
                       <TextInput
                         className="text-sm font-medium text-slate-800 dark:text-white text-right"
                         value={allergies}
                         onChangeText={setAllergies}
-                        placeholder="Enter allergies"
+                        placeholder={i18n.t("profile.enterAllergies")}
                         placeholderTextColor={
                           isDarkColorScheme ? "#94a3b8" : "#64748b"
                         }
@@ -811,7 +811,7 @@ export default function ProfileScreen() {
                   className="mt-2 bg-red-50 dark:bg-red-900/20"
                   textClassName="text-red-500 dark:text-red-400"
                 >
-                  Sign Out
+                  {i18n.t("profile.signOut")}
                 </Button>
               </View>
             </View>

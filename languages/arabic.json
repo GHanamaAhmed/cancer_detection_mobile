@@ -1,0 +1,374 @@
+{
+  "auth": {
+    "common": {
+      "back": "رجوع",
+      "loading": "جاري التحميل...",
+      "or": "أو"
+    },
+    "welcome": {
+      "title": "مرحباً بك",
+      "subtitle": "سجل الدخول إلى حسابك أو أنشئ حساباً جديداً"
+    },
+    "tabs": {
+      "login": "تسجيل الدخول",
+      "register": "التسجيل"
+    },
+    "auth": {
+      "login": {
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "password": "كلمة المرور",
+        "passwordPlaceholder": "••••••••",
+        "rememberMe": "تذكرني",
+        "forgotPassword": "هل نسيت كلمة المرور؟",
+        "signIn": "تسجيل الدخول",
+        "signingIn": "جاري تسجيل الدخول...",
+        "noAccount": "ليس لديك حساب؟",
+        "signUp": "التسجيل"
+      },
+      "register": {
+        "fullName": "الاسم الكامل",
+        "fullNamePlaceholder": "أدخل اسمك الكامل",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "password": "كلمة المرور",
+        "passwordPlaceholder": "أنشئ كلمة مرور",
+        "termsAgreement": "أوافق على شروط الخدمة وسياسة الخصوصية",
+        "createAccount": "إنشاء حساب",
+        "creatingAccount": "جاري إنشاء الحساب...",
+        "haveAccount": "هل لديك حساب بالفعل؟",
+        "signIn": "تسجيل الدخول",
+        "verifyEmail": "التحقق من البريد الإلكتروني",
+        "sending": "جاري الإرسال...",
+        "whyCreateAccount": {
+          "title": "لماذا تنشئ حساباً؟",
+          "tracking": {
+            "title": "تتبع صحي مخصص",
+            "description": "راقب تقدمك الصحي بمرور الوقت"
+          },
+          "security": {
+            "title": "تخزين آمن للبيانات",
+            "description": "بياناتك الصحية مشفرة ومحمية"
+          }
+        },
+        "verification": {
+          "title": "تحقق من بريدك الإلكتروني",
+          "subtitle": "أدخل رمز التحقق المرسل إلى {{email}}",
+          "codePlaceholder": "أدخل رمز التحقق",
+          "codeLabel": "رمز التحقق"
+        }
+      },
+      "forgotPassword": {
+        "title": "نسيت كلمة المرور",
+        "subtitle": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رمز تحقق",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "sendCode": "إرسال رمز التحقق",
+        "sending": "جاري الإرسال...",
+        "backToLogin": "العودة إلى تسجيل الدخول",
+        "verification": {
+          "title": "التحقق من الرمز",
+          "subtitle": "أدخل رمز التحقق المرسل إلى {{email}}",
+          "codePlaceholder": "أدخل رمز التحقق",
+          "codeLabel": "رمز التحقق",
+          "verify": "التحقق من الرمز",
+          "verifying": "جاري التحقق..."
+        },
+        "resetPassword": {
+          "title": "إعادة تعيين كلمة المرور",
+          "subtitle": "أنشئ كلمة مرور جديدة لحسابك",
+          "newPasswordLabel": "كلمة المرور الجديدة",
+          "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+          "confirmPasswordLabel": "تأكيد كلمة المرور الجديدة",
+          "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+          "resetButton": "إعادة تعيين كلمة المرور",
+          "resetting": "جاري إعادة التعيين..."
+        }
+      }
+    },
+    "alerts": {
+      "error": "خطأ",
+      "success": "نجاح",
+      "loginFailed": "بيانات الاعتماد غير صالحة. يرجى المحاولة مرة أخرى.",
+      "loginError": "حدث خطأ أثناء تسجيل الدخول",
+      "registerError": "حدث خطأ أثناء التسجيل",
+      "passwordMismatch": "كلمات المرور الجديدة غير متطابقة",
+      "verificationFailed": "الرمز غير صحيح أو منتهي الصلاحية.",
+      "verificationError": "حدث خطأ أثناء التحقق من الرمز",
+      "resetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح",
+      "resetFailed": "تعذر إعادة تعيين كلمة المرور. حاول مرة أخرى لاحقاً.",
+      "resetError": "حدث خطأ أثناء إعادة تعيين كلمة المرور",
+      "emailRequired": "الرجاء إدخال عنوان بريدك الإلكتروني",
+      "sendVerificationFailed": "فشل في إرسال رمز التحقق"
+    }
+  },
+  "home": {
+    "notifications": {
+      "title": "الإشعارات",
+      "loading": "جاري تحميل الإشعارات...",
+      "noneYet": "لا توجد إشعارات بعد"
+    },
+    "riskLabels": {
+      "low": "خطر منخفض",
+      "medium": "خطر متوسط",
+      "high": "خطر مرتفع",
+      "critical": "خطر حرج",
+      "unknown": "غير معروف"
+    },
+    "dashboard": {
+      "loading": "جاري تحميل لوحة التحكم الخاصة بك...",
+      "error": {
+        "tryAgain": "حاول مرة أخرى"
+      },
+      "userSection": {
+        "welcome": "أهلاً بك",
+        "subtitle": "دعنا نتحقق من صحة بشرتك اليوم"
+      },
+      "analytics": {
+        "title": "تحليلات صحة الجلد",
+        "totalScans": "إجمالي الفحوصات",
+        "lowRiskLesions": "آفات منخفضة الخطورة",
+        "daysSinceCheck": "أيام منذ آخر فحص",
+        "activeMonitoring": "مراقبة نشطة",
+        "noAnalytics": "لا توجد تحليلات صحية متاحة بعد.",
+        "takeFirstScan": "قم بإجراء أول فحص لك"
+      },
+      "recentResults": {
+        "title": "النتائج الأخيرة",
+        "seeAll": "مشاهدة الكل",
+        "noResults": "لا توجد نتائج حديثة متاحة."
+      },
+      "upcomingAppointment": {
+        "title": "الموعد القادم",
+        "noAppointments": "لا توجد مواعيد قادمة.",
+        "findDoctor": "ابحث عن طبيب"
+      },
+      "quickActions": {
+        "newScan": "فحص جديد",
+        "history": "السجل"
+      }
+    }
+  },
+  "doctors": {
+    "authentication": {
+      "errorTitle": "خطأ في المصادقة",
+      "loginAgain": "يرجى تسجيل الدخول مرة أخرى"
+    },
+    "doctors": {
+      "title": "ابحث عن طبيب",
+      "subtitle": "تواصل مع أخصائي",
+      "searchPlaceholder": "ابحث عن أطباء...",
+      "doctorDetails": "تفاصيل الطبيب",
+      "availableNow": "متاح الآن",
+      "specializations": "التخصصات",
+      "education": "التعليم",
+      "reviews": "التقييمات",
+      "connecting": "جاري الاتصال...",
+      "pending": "معلق",
+      "connected": "متصل",
+      "connect": "تواصل",
+      "chat": "محادثة"
+    },
+    "connection": {
+      "requestPendingTitle": "الطلب معلق",
+      "requestPendingMessage": "طلب الاتصال الخاص بك معلق.",
+      "connectionDeclinedTitle": "تم رفض الاتصال",
+      "connectionDeclinedMessage": "تم رفض طلب الاتصال الخاص بك.",
+      "alreadyConnectedTitle": "متصل بالفعل",
+      "alreadyConnectedMessage": "أنت متصل بالفعل بهذا الطبيب.",
+      "requestSentTitle": "تم إرسال الطلب",
+      "requestSentMessage": "تم إرسال طلب الاتصال الخاص بك.",
+      "requestFailed": "فشل في إرسال طلب الاتصال",
+      "connectionError": "حدثت مشكلة في الاتصال. يرجى المحاولة مرة أخرى."
+    },
+    "alerts": {
+      "error": "خطأ",
+      "success": "نجاح"
+    }
+  },
+  "capture": {
+    "title": "التقاط صورة",
+    "subtitle": "ضع الصورة داخل الإطار والتقط صورة واضحة",
+    "noPermission": "جاري طلب إذن الكاميرا...",
+    "noAccess": "لا يوجد وصول إلى الكاميرا",
+    "allowCamera": "السماح للكاميرا",
+    "flash": "الفلاش",
+    "flashOn": "تشغيل",
+    "flashOff": "إيقاف",
+    "captureGuidelines": "إرشادات الالتقاط",
+    "goodLighting": "إضاءة جيدة",
+    "goodLightingDesc": "استخدم الإضاءة الطبيعية كلما أمكن. تجنب الظلال.",
+    "steadyHand": "يد ثابتة",
+    "steadyHandDesc": "امسك جهازك بثبات لتجنب الصور الضبابية.",
+    "cleanLens": "عدسة نظيفة",
+    "cleanLensDesc": "تأكد من أن عدسة الكاميرا نظيفة وواضحة.",
+    "selectGallery": "اختر من المعرض",
+    "captureButton": "التقاط صورة",
+    "retake": "إعادة الالتقاط",
+    "uploading": "جاري الرفع...",
+    "upload": "رفع",
+    "analyzing": "جاري التحليل...",
+    "analyzeImage": "تحليل الصورة",
+    "viewResults": "عرض النتائج",
+    "bodyLocation": "موقع الجسم",
+    "lesionSize": "حجم الآفة (مم)",
+    "enterLesionSize": "أدخل الحجم بالمليمترات"
+  },
+  "profile": {
+    "loading": "جاري تحميل ملفك الشخصي...",
+    "tryAgain": "حاول مرة أخرى",
+    "defaultUser": "مستخدم",
+    "age": "العمر",
+    "lastExam": "آخر فحص",
+    "personalInformation": "المعلومات الشخصية",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "permissions": "الأذونات",
+    "cameraAccess": "الوصول إلى الكاميرا",
+    "locationAccess": "الوصول إلى الموقع",
+    "notifications": "الإشعارات",
+    "permissionGranted": "تم منح الإذن",
+    "cameraPermissionDescription": "السماح للتطبيق باستخدام الكاميرا",
+    "locationPermissionDescription": "السماح للتطبيق باستخدام موقعك",
+    "notificationsDescription": "تلقي التنبيهات والتذكيرات",
+    "healthInformation": "المعلومات الصحية",
+    "height": "الطول",
+    "enterHeight": "أدخل الطول بالسنتيمتر",
+    "weight": "الوزن",
+    "enterWeight": "أدخل الوزن بالكيلوغرام",
+    "allergies": "الحساسية",
+    "enterAllergies": "أدخل أنواع الحساسية",
+    "signOut": "تسجيل الخروج"
+  },
+  "result": {
+    "detailsTitle": "تفاصيل الحالة",
+    "loading": "جاري تحميل تفاصيل الحالة...",
+    "tryAgain": "حاول مرة أخرى",
+    "riskLevel": {
+      "low": "خطر منخفض",
+      "medium": "خطر متوسط",
+      "high": "خطر مرتفع",
+      "critical": "خطر حرج",
+      "unknown": "غير معروف",
+      "label": "مستوى الخطر"
+    },
+    "doctorReviewed": "تمت مراجعة الطبيب",
+    "noImagesAvailable": "لا توجد صور متاحة",
+    "unknown": "غير معروف",
+    "unknownStatus": "حالة غير معروفة",
+    "tab": {
+      "details": "التفاصيل",
+      "analysis": "التحليل"
+    },
+    "caseOverview": "نظرة عامة على الحالة",
+    "caseNumber": "رقم الحالة:",
+    "date": "التاريخ:",
+    "status": "الحالة:",
+    "lesionType": "نوع الآفة:",
+    "bodyLocation": "موقع الجسم:",
+    "firstNoticed": "لوحظ لأول مرة:",
+    "symptoms": "الأعراض:",
+    "diagnosis": "التشخيص:",
+    "upcomingAppointment": "الموعد القادم",
+    "deleteCase": "حذف الحالة والصور",
+    "deleteWarning": "تحذير: هذا الإجراء دائم ولا يمكن التراجع عنه.",
+    "deleting": "جاري حذف الحالة والصور...",
+    "findDoctor": "ابحث عن طبيب",
+    "abcde": {
+      "asymmetry": "عدم التناسق",
+      "border": "الحدود",
+      "color": "اللون",
+      "diameter": "القطر",
+      "evolution": "التطور"
+    },
+    "analysisResults": "نتائج التحليل",
+    "observations": "الملاحظات",
+    "recommendations": "التوصيات",
+    "doctorNotes": "ملاحظات الطبيب",
+    "confidence": "الثقة:",
+    "unknownLocation": "موقع غير معروف"
+  },
+
+  "history": {
+    "title": "سجل الفحص",
+    "loading": "جاري تحميل سجل الفحص الخاص بك...",
+    "tryAgain": "حاول مرة أخرى",
+    "fetchError": "فشل في جلب بيانات السجل",
+    "loadError": "فشل في تحميل بيانات السجل",
+    "lowRisk": "خطر منخفض",
+    "mediumRisk": "خطر متوسط",
+    "highRisk": "خطر مرتفع",
+    "criticalRisk": "خطر حرج",
+    "unknownRisk": "غير معروف",
+    "doctorReviewed": "تمت مراجعة الطبيب",
+    "imageSingular": "صورة",
+    "imagePlural": "صور",
+    "unknownLocation": "موقع غير معروف",
+    "emptyTitle": "لا يوجد سجل لفحص الجلد بعد.",
+    "emptySubtitle": "قم بإجراء أول فحص لك للبدء.",
+    "scanButton": "إجراء فحص",
+    "endOfHistory": "نهاية السجل"
+  },
+  "appointments": {
+    "title": "المواعيد",
+    "loadingAppointments": "جاري تحميل المواعيد...",
+    "status": {
+      "confirmed": "مؤكد",
+      "pending": "معلق",
+      "completed": "مكتمل",
+      "canceled": "ملغى",
+      "rescheduled": "تمت إعادة الجدولة",
+      "unknown": "غير معروف"
+    },
+    "appointmentTypes": {
+      "inPerson": "حضوري",
+      "video": "فيديو",
+      "followUp": "متابعة"
+    },
+    "buttons": {
+      "details": "التفاصيل",
+      "cancel": "إلغاء",
+      "continue": "متابعة",
+      "tryAgain": "حاول مرة أخرى",
+      "bookAppointment": "حجز موعد",
+      "bookingInProgress": "جاري الحجز..."
+    },
+    "tabs": {
+      "upcoming": "القادمة",
+      "bookNew": "حجز جديد",
+      "past": "السابقة"
+    },
+    "upcoming": {
+      "emptyTitle": "لا توجد مواعيد قادمة",
+      "emptySubtitle": "احجز موعدًا مع أحد أطبائك."
+    },
+    "past": {
+      "emptyTitle": "لا توجد مواعيد سابقة",
+      "emptySubtitle": "سيظهر سجل مواعيدك هنا."
+    },
+    "bookingFlow": {
+      "loadingAvailability": "جاري تحميل التوافر...",
+      "selectDateTimeTitle": "اختر التاريخ والوقت",
+      "availableTimes": "الأوقات المتاحة",
+      "noSlotsMessage": "لا توجد خانات متاحة لهذا الطبيب في {{month}}.",
+      "noSlotsSuggestion": "حاول تحديد شهر أو طبيب مختلف.",
+      "loadingDoctors": "جاري تحميل الأطباء...",
+      "noConnectedDoctorsTitle": "لا يوجد أطباء متصلون",
+      "noConnectedDoctorsMessage": "يجب عليك الاتصال بالأطباء قبل حجز المواعيد.",
+      "findDoctorsButton": "البحث عن أطباء",
+      "selectDoctorTitle": "اختر الطبيب",
+      "noDoctorsAvailable": "لا يوجد أطباء متاحون",
+      "loadingDetails": "جاري التحميل...",
+      "confirmAppointmentTitle": "تأكيد الموعد",
+      "consultationFee": "رسوم الاستشارة",
+      "appointmentTypeTitle": "نوع الموعد",
+      "reasonForVisitTitle": "سبب الزيارة",
+      "reasonPlaceholder": "صف بإيجاز أعراضك أو سبب الزيارة"
+    }
+  },
+  "video": {
+    "tryAgain": "حاول مرة أخرى",
+    "loadingCall": "جاري تحميل المكالمة...",
+    "callNotFound": "تعذر العثور على المكالمة"
+  }
+}

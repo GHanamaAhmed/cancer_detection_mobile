@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/images/adb-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#004EE2"
+      "backgroundColor": "#1d293d"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -25,7 +25,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adb-icon.png",
-        "backgroundColor": "#004EE2"
+        "backgroundColor": "#1d293d"
       },
       "permissions": [
         "android.permission.BLUETOOTH",
